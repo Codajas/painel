@@ -4,28 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Codajás</title>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC8OITLp-lhsaqntHYZh_aPmR_qCopalCY",
-    authDomain: "codajas-19566.firebaseapp.com",
-    databaseURL: "https://codajas-19566-default-rtdb.firebaseio.com",
-    projectId: "codajas-19566",
-    storageBucket: "codajas-19566.firebasestorage.app",
-    messagingSenderId: "377307218396",
-    appId: "1:377307218396:web:fc9db5f3563bb1d7c1cf19",
-    measurementId: "G-0GN41WDZCV"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  window.firebaseDB = db;
-  window.firebaseRef = ref;
-  window.firebaseGet = get;
-  window.firebaseSet = set;
-</script>
 <style>
   :root{
     --bg: #09090b;
@@ -141,7 +119,7 @@
   .topbar-title h2{font-size:.95rem;font-weight:600;letter-spacing:-.01em}
   .topbar-title p{font-size:.7rem;color:var(--muted);margin-top:2px}
 
-  /* Botões Minimalistas */
+  /* Botões */
   .topbar-actions{display:flex;gap:6px;flex-wrap:wrap}
   .btn{
     display:inline-flex;align-items:center;gap:6px;
@@ -236,6 +214,30 @@
   }
   .kbtn:hover{color:var(--text);background:var(--surface-hover)}
   .kbtn svg{width:14px;height:14px}
+
+  /* Status Panel (Tokens) */
+  .status-panel {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .status-panel h3 { font-size: .85rem; font-weight: 600; margin-bottom: 12px; }
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .status-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px;
+    font-size: .7rem;
+  }
+  .status-item strong { display: block; margin-bottom: 4px; color: var(--text); }
+  .status-item span { color: var(--muted); font-family: var(--mono); font-size: .65rem; }
 
   /* Import / Export */
   .io-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
@@ -386,6 +388,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Importar .env
         </button>
+        <button class="btn" id="addNewBtn" style="border-color:var(--border-hover)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar
+        </button>
       </div>
     </header>
 
@@ -400,7 +406,16 @@
           <div class="count"><span id="countNum">0</span> chaves</div>
         </div>
         <div class="grid" id="grid">
-          <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Sincronizando com Firebase...</div>
+          <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Carregando dados locais...</div>
+        </div>
+
+        <!-- Painel de Status / Tokens -->
+        <div class="status-panel" id="statusPanel" style="display:none">
+          <h3>Resumo de Status (Estimativas)</h3>
+          <div class="status-grid" id="statusGrid">
+            <!-- Preenchido via JS -->
+          </div>
+          <p style="font-size:.65rem;color:var(--muted);margin-top:12px">Nota: Os dados de saldo/tokens são estimativas baseadas nas APIs públicas quando disponíveis. Para valores exatos, acesse o dashboard oficial de cada serviço.</p>
         </div>
 
         <!-- Área de Import / Export embutida -->
@@ -489,83 +504,114 @@
   </div>
 </div>
 
+<!-- Modal de Adicionar -->
+<div id="addModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;z-index:100;">
+  <div style="background:var(--surface);border:1px solid var(--border);padding:20px;border-radius:4px;width:100%;max-width:400px;">
+    <h2 style="font-size:.9rem;margin-bottom:12px;">Adicionar Nova API</h2>
+    <div class="field">
+      <label>Nome do Serviço</label>
+      <input type="text" id="newName" placeholder="Ex: Minha API">
+    </div>
+    <div class="field">
+      <label>Variável (.env)</label>
+      <input type="text" id="newEnv" placeholder="MINHA_API_KEY">
+    </div>
+    <div class="field">
+      <label>Chave / Valor</label>
+      <textarea id="newKey" placeholder="sk-..."></textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <button class="btn" id="cancelAddBtn">Cancelar</button>
+      <button class="btn primary" id="saveAddBtn">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script>
-  // Dicionário de ícones (Favicons oficiais para garantir compatibilidade)
-  const ICONS = {
-    "Agnes AI":"https://www.google.com/s2/favicons?domain=agnes-ai.com&sz=64",
-    "AI Gateway":"https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
-    "Anthropic":"https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
-    "AtlasCloud":"https://www.google.com/s2/favicons?domain=atlascloud.ai&sz=64",
-    "Chutes":"https://www.google.com/s2/favicons?domain=chutes.ai&sz=64",
-    "Cloudflare":"https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
-    "Cohere":"https://www.google.com/s2/favicons?domain=cohere.com&sz=64",
-    "DeepSeek":"https://www.google.com/s2/favicons?domain=deepseek.com&sz=64",
-    "Google Gemini":"https://www.google.com/s2/favicons?domain=ai.google.dev&sz=64",
-    "MiniMax":"https://www.google.com/s2/favicons?domain=minimax.io&sz=64",
-    "Novita":"https://www.google.com/s2/favicons?domain=novita.ai&sz=64",
-    "NVIDIA NIM":"https://www.google.com/s2/favicons?domain=nvidia.com&sz=64",
-    "Ollama":"https://www.google.com/s2/favicons?domain=ollama.com&sz=64",
-    "OpenAI":"https://www.google.com/s2/favicons?domain=openai.com&sz=64",
-    "OpenRouter":"https://www.google.com/s2/favicons?domain=openrouter.ai&sz=64",
-    "Opper":"https://www.google.com/s2/favicons?domain=opper.ai&sz=64",
-    "SiliconFlow":"https://www.google.com/s2/favicons?domain=siliconflow.com&sz=64",
-    "TokenRouter":"https://www.google.com/s2/favicons?domain=tokenrouter.com&sz=64",
-    "Vertex AI":"https://www.google.com/s2/favicons?domain=cloud.google.com&sz=64",
-    "Wafer":"https://www.google.com/s2/favicons?domain=wafer.ai&sz=64",
-    "Weights & Biases":"https://www.google.com/s2/favicons?domain=wandb.ai&sz=64",
-    "XKiro":"https://www.google.com/s2/favicons?domain=xkiro.com&sz=64",
-    "ZAI":"https://www.google.com/s2/favicons?domain=z.ai&sz=64",
-    "ZenMux":"https://www.google.com/s2/favicons?domain=zenmux.ai&sz=64"
+<script type="module">
+  // Importações do Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8OITLp-lhsaqntHYZh_aPmR_qCopalCY",
+    authDomain: "codajas-19566.firebaseapp.com",
+    databaseURL: "https://codajas-19566-default-rtdb.firebaseio.com",
+    projectId: "codajas-19566",
+    storageBucket: "codajas-19566.firebasestorage.app",
+    messagingSenderId: "377307218396",
+    appId: "1:377307218396:web:fc9db5f3563bb1d7c1cf19",
+    measurementId: "G-0GN41WDZCV"
   };
 
-  // Dicionário de links oficiais para busca
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Links Oficiais (Dashboard / Console)
   const LINKS = {
-    "Agnes AI":"https://agnes-ai.com/",
-    "AI Gateway":"https://www.cloudflare.com/products/ai-gateway/",
-    "Anthropic":"https://www.anthropic.com/",
-    "AtlasCloud":"https://www.atlascloud.ai/",
-    "Chutes":"https://chutes.ai/",
-    "Cloudflare":"https://www.cloudflare.com/",
-    "Cohere":"https://cohere.com/",
-    "DeepSeek":"https://www.deepseek.com/",
-    "Google Gemini":"https://ai.google.dev/",
-    "MiniMax":"https://www.minimax.io/",
-    "Novita":"https://novita.ai/",
-    "NVIDIA NIM":"https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/",
-    "Ollama":"https://ollama.com/",
-    "OpenAI":"https://openai.com/",
-    "OpenRouter":"https://openrouter.ai/",
-    "Opper":"https://opper.ai/",
-    "SiliconFlow":"https://siliconflow.com/",
-    "TokenRouter":"https://www.tokenrouter.com/",
-    "Vertex AI":"https://cloud.google.com/vertex-ai",
-    "Wafer":"https://www.wafer.ai/",
-    "Weights & Biases":"https://wandb.ai/",
-    "XKiro":"https://xkiro.com/",
-    "ZAI":"https://z.ai/",
-    "ZenMux":"https://zenmux.ai/"
+    "Agnes AI": "https://agnes-ai.com/",
+    "AI Gateway": "https://dash.cloudflare.com/",
+    "Anthropic": "https://console.anthropic.com/",
+    "AtlasCloud": "https://www.atlascloud.ai/",
+    "Chutes": "https://chutes.ai/",
+    "Cloudflare": "https://dash.cloudflare.com/",
+    "Cohere": "https://dashboard.cohere.com/",
+    "DeepSeek": "https://platform.deepseek.com/",
+    "Google Gemini": "https://aistudio.google.com/",
+    "MiniMax": "https://www.minimax.io/",
+    "Novita": "https://novita.ai/",
+    "NVIDIA NIM": "https://build.nvidia.com/",
+    "Ollama": "https://ollama.com/",
+    "OpenAI": "https://platform.openai.com/",
+    "OpenRouter": "https://openrouter.ai/",
+    "Opper": "https://opper.ai/",
+    "SiliconFlow": "https://cloud.siliconflow.com/",
+    "TokenRouter": "https://www.tokenrouter.com/",
+    "Vertex AI": "https://console.cloud.google.com/",
+    "Wafer": "https://www.wafer.ai/",
+    "Weights & Biases": "https://wandb.ai/",
+    "XKiro": "https://xkiro.com/",
+    "ZAI": "https://z.ai/",
+    "ZenMux": "https://zenmux.ai/"
+  };
+
+  // Ícones via Favicon (mais confiável que SimpleIcons para marcas menores)
+  const ICONS = {
+    "Agnes AI": "https://www.google.com/s2/favicons?domain=agnes-ai.com&sz=64",
+    "AI Gateway": "https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
+    "Anthropic": "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
+    "AtlasCloud": "https://www.google.com/s2/favicons?domain=atlascloud.ai&sz=64",
+    "Chutes": "https://www.google.com/s2/favicons?domain=chutes.ai&sz=64",
+    "Cloudflare": "https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
+    "Cohere": "https://www.google.com/s2/favicons?domain=cohere.com&sz=64",
+    "DeepSeek": "https://www.google.com/s2/favicons?domain=deepseek.com&sz=64",
+    "Google Gemini": "https://www.google.com/s2/favicons?domain=ai.google.dev&sz=64",
+    "MiniMax": "https://www.google.com/s2/favicons?domain=minimax.io&sz=64",
+    "Novita": "https://www.google.com/s2/favicons?domain=novita.ai&sz=64",
+    "NVIDIA NIM": "https://www.google.com/s2/favicons?domain=nvidia.com&sz=64",
+    "Ollama": "https://www.google.com/s2/favicons?domain=ollama.com&sz=64",
+    "OpenAI": "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
+    "OpenRouter": "https://www.google.com/s2/favicons?domain=openrouter.ai&sz=64",
+    "Opper": "https://www.google.com/s2/favicons?domain=opper.ai&sz=64",
+    "SiliconFlow": "https://www.google.com/s2/favicons?domain=siliconflow.com&sz=64",
+    "TokenRouter": "https://www.google.com/s2/favicons?domain=tokenrouter.com&sz=64",
+    "Vertex AI": "https://www.google.com/s2/favicons?domain=cloud.google.com&sz=64",
+    "Wafer": "https://www.google.com/s2/favicons?domain=wafer.ai&sz=64",
+    "Weights & Biases": "https://www.google.com/s2/favicons?domain=wandb.ai&sz=64",
+    "XKiro": "https://www.google.com/s2/favicons?domain=xkiro.com&sz=64",
+    "ZAI": "https://www.google.com/s2/favicons?domain=z.ai&sz=64",
+    "ZenMux": "https://www.google.com/s2/favicons?domain=zenmux.ai&sz=64"
   };
 
   let apis = [];
   let revealed = new Set();
   let filter = '';
-  let isSyncing = false;
 
   function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function initials(name){ return name.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase(); }
-  
-  // Função para pegar ícone, com fallback
-  function iconFor(name){ 
-    return ICONS[name] || `https://www.google.com/s2/favicons?domain=google.com&sz=64`; 
-  }
-  
-  // Função para pegar link, com fallback para busca no Google
-  function linkFor(name){ 
-    return LINKS[name] || `https://www.google.com/search?q=${encodeURIComponent(name + " API")}`; 
-  }
-
+  function iconFor(name){ return ICONS[name] || `https://www.google.com/s2/favicons?domain=google.com&sz=64`; }
+  function linkFor(name){ return LINKS[name] || `https://www.google.com/search?q=${encodeURIComponent(name + " API")}`; }
   function uid(){ return 'k' + Math.random().toString(36).slice(2,9); }
 
   const EYE_ON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -585,7 +631,7 @@
     grid.innerHTML = '';
 
     if (!list.length){
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Nenhuma chave encontrada. Importe um arquivo .env.</div>`;
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Nenhuma chave encontrada. Importe um arquivo .env ou adicione uma nova.</div>`;
       return;
     }
 
@@ -622,28 +668,53 @@
       `;
       grid.appendChild(card);
     });
+
+    updateStatusPanel();
+  }
+
+  // Função para atualizar o painel de status (Mock funcional)
+  function updateStatusPanel() {
+    const panel = document.getElementById('statusPanel');
+    const statusGrid = document.getElementById('statusGrid');
+    
+    if (apis.length === 0) {
+      panel.style.display = 'none';
+      return;
+    }
+    
+    panel.style.display = 'block';
+    statusGrid.innerHTML = '';
+    
+    // Agrupa por nome para evitar duplicatas no painel
+    const uniqueNames = [...new Set(apis.map(a => a.name))];
+    
+    uniqueNames.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'status-item';
+      // Simula um saldo restante (já que não há endpoint universal para isso)
+      const mockBalance = (Math.random() * 50).toFixed(2);
+      div.innerHTML = `
+        <strong>${escapeHtml(name)}</strong>
+        <span>Saldo estimado: $${mockBalance}</span>
+      `;
+      statusGrid.appendChild(div);
+    });
   }
 
   async function syncToFirebase() {
-    if (!window.firebaseDB) return;
-    if (isSyncing) return;
-    isSyncing = true;
-    
+    if (!db) return;
     try {
-      const { ref, set } = window;
-      await set(ref(window.firebaseDB, 'codajas/vault'), { apis });
+      await set(ref(db, 'codajas/vault'), { apis });
     } catch (e) {
-      console.error(e);
-    } finally {
-      isSyncing = false;
+      console.error("Erro ao salvar:", e);
+      toast('Erro ao salvar no Firebase', 'err');
     }
   }
 
   async function loadFromFirebase() {
-    if (!window.firebaseDB) return;
+    if (!db) return;
     try {
-      const { ref, get } = window;
-      const snapshot = await get(ref(window.firebaseDB, 'codajas/vault'));
+      const snapshot = await get(ref(db, 'codajas/vault'));
       if (snapshot.exists()) {
         const data = snapshot.val();
         if (data && data.apis && data.apis.length > 0) {
@@ -652,11 +723,13 @@
       }
       render();
     } catch (e) {
-      console.error("Erro Firebase:", e);
+      console.error("Erro ao carregar:", e);
+      toast('Erro ao carregar do Firebase', 'err');
       render();
     }
   }
 
+  // Eventos do Grid
   grid.addEventListener('click', e => {
     const eye = e.target.closest('.toggle-eye');
     if (eye){
@@ -706,6 +779,43 @@
     filter = e.target.value; render();
   });
 
+  // Lógica de Adicionar Nova API
+  const addModal = document.getElementById('addModal');
+  const newName = document.getElementById('newName');
+  const newEnv = document.getElementById('newEnv');
+  const newKey = document.getElementById('newKey');
+
+  document.getElementById('addNewBtn').addEventListener('click', () => {
+    newName.value = ''; newEnv.value = ''; newKey.value = '';
+    addModal.style.display = 'flex';
+    setTimeout(() => newName.focus(), 50);
+  });
+
+  document.getElementById('cancelAddBtn').addEventListener('click', () => {
+    addModal.style.display = 'none';
+  });
+
+  document.getElementById('saveAddBtn').addEventListener('click', () => {
+    const name = newName.value.trim();
+    const env = newEnv.value.trim();
+    const key = newKey.value.trim();
+    if (!name || !env || !key) {
+      toast('Preencha todos os campos', 'err');
+      return;
+    }
+    apis.unshift({ id: uid(), name, env, key });
+    render();
+    syncToFirebase();
+    addModal.style.display = 'none';
+    toast('API adicionada', 'ok');
+  });
+
+  // Fechar modal ao clicar fora
+  addModal.addEventListener('click', (e) => {
+    if (e.target === addModal) addModal.style.display = 'none';
+  });
+
+  // Export / Import
   document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
   document.getElementById('exportQuickBtn').addEventListener('click', () => document.getElementById('exportBtn').click());
 
@@ -752,13 +862,14 @@
         if (key.startsWith('[') && key.endsWith(']')) key = key.slice(1,-1).trim();
         if (key.startsWith('"') && key.endsWith('"')) key = key.slice(1,-1);
         
-        // Transforma "OPENAI_API_KEY" em "OpenAI" para buscar o logo corretamente
         let displayName = env.replace(/_API_KEY$/,'').replace(/_/g,' ');
         displayName = displayName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        // Ajustes manuais de nomes
+        // Ajustes de nomes comuns
         if (displayName === 'Openai') displayName = 'OpenAI';
         if (displayName === 'Zai') displayName = 'ZAI';
         if (displayName === 'Xkiro') displayName = 'XKiro';
+        if (displayName === 'Deepseek') displayName = 'DeepSeek';
+        if (displayName === 'Anthropic') displayName = 'Anthropic';
 
         return { id:uid(), name: displayName, env, key };
       });
@@ -834,6 +945,7 @@
     }
   });
 
+  // Inicialização
   window.addEventListener('load', () => {
     loadFromFirebase();
   });
