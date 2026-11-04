@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Codajás</title>
-<!-- Favicon Próprio (Indígena em SVG) -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' fill='%23121214'/%3E%3Cg fill='%23121214' stroke='%23ededed' stroke-width='1.5' stroke-linejoin='miter' stroke-linecap='butt'%3E%3Cpath d='M37.0 17.0 Q40.3 9.5 43 2 Q40.0 9.5 37.0 17.0Z'/%3E%3Cpath d='M34.0 16.5 Q34.0 8.6 34 0.8 Q34.0 8.6 34.0 16.5Z'/%3E%3Cpath d='M31.0 17.0 Q27.5 9.8 24 2.5 Q27.5 9.8 31.0 17.0Z'/%3E%3Cpath d='M28.5 18.5 Q22.3 12.8 16 7 Q22.3 12.8 28.5 18.5Z'/%3E%3Cpath d='M26.5 20.5 Q17.8 17.3 9 14 Q17.8 17.3 26.5 20.5Z'/%3E%3Cpath d='M25 59 L6 64 L58 64 L41 59 L40 50 L29 46Z'/%3E%3Cpath d='M38 15 C29 12 21 17 19.5 27 C18 38 19 50 14 62 L25 61 C27 51 27 43 29.5 36 C30.5 29 32.5 23 38 20Z'/%3E%3Cpath d='M38 15 L43 19 L45 24 L44 27 L49.5 33.5 L45.5 36 L46.5 38 L45 39.5 L46 41 L44.5 43 L47.5 47.5 L44 51.5 L33 51 L29.5 41 L28.5 29 L31 19Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23ededed' stroke-width='1.5' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M35.5 23 L44.6 26.4' stroke-width='2.85'/%3E%3Cpath d='M38 29.4 L43.2 28.4'/%3E%3Cpath d='M31 43 L36 48.5 L43 49.5' stroke-width='1'/%3E%3C/g%3E%3Ccircle cx='38.2' cy='29.2' r='0.9' fill='%23ededed'/%3E%3C/svg%3E">
+<!-- Favicon Próprio (Preto, sem fundo, minimalista) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2318181b' stroke-width='2.5' stroke-linejoin='miter' stroke-linecap='butt'%3E%3Cpath d='M37.0 17.0 Q40.3 9.5 43 2 Q40.0 9.5 37.0 17.0Z'/%3E%3Cpath d='M34.0 16.5 Q34.0 8.6 34 0.8 Q34.0 8.6 34.0 16.5Z'/%3E%3Cpath d='M31.0 17.0 Q27.5 9.8 24 2.5 Q27.5 9.8 31.0 17.0Z'/%3E%3Cpath d='M28.5 18.5 Q22.3 12.8 16 7 Q22.3 12.8 28.5 18.5Z'/%3E%3Cpath d='M26.5 20.5 Q17.8 17.3 9 14 Q17.8 17.3 26.5 20.5Z'/%3E%3Cpath d='M25 59 L6 64 L58 64 L41 59 L40 50 L29 46Z'/%3E%3Cpath d='M38 15 C29 12 21 17 19.5 27 C18 38 19 50 14 62 L25 61 C27 51 27 43 29.5 36 C30.5 29 32.5 23 38 20Z'/%3E%3Cpath d='M38 15 L43 19 L45 24 L44 27 L49.5 33.5 L45.5 36 L46.5 38 L45 39.5 L46 41 L44.5 43 L47.5 47.5 L44 51.5 L33 51 L29.5 41 L28.5 29 L31 19Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%2318181b' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M35.5 23 L44.6 26.4' stroke-width='4'/%3E%3Cpath d='M38 29.4 L43.2 28.4'/%3E%3Cpath d='M31 43 L36 48.5 L43 49.5' stroke-width='2'/%3E%3C/g%3E%3Ccircle cx='38.2' cy='29.2' r='1.5' fill='%2318181b'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  :root{
+  :root {
     --bg: #09090b;
     --surface: #121214;
     --surface-hover: #1c1c1f;
@@ -16,10 +16,25 @@
     --border-hover: #333338;
     --text: #ededed;
     --muted: #7a7a85;
+    --accent: #3ddc97;
+    --danger: #ff5c7a;
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --sidebar-w: 56px;
     --sidebar-expanded: 210px;
   }
+
+  [data-theme="light"] {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --surface-hover: #f1f3f5;
+    --border: #e9ecef;
+    --border-hover: #dee2e6;
+    --text: #18181b;
+    --muted: #71717a;
+    --accent: #10b981;
+    --danger: #ef4444;
+  }
+
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
@@ -28,11 +43,11 @@
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
+    transition: background 0.3s, color 0.3s;
   }
   ::-webkit-scrollbar{width:6px;height:6px}
   ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
-  ::-webkit-scrollbar-thumb:hover{background:#555}
+  ::-webkit-scrollbar-thumb{background:var(--border-hover);border-radius:4px}
 
   .app{display:flex;height:100vh}
 
@@ -43,7 +58,7 @@
     border-right:1px solid var(--border);
     display:flex;flex-direction:column;
     padding:14px 0;
-    transition:width .15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:width .15s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, border-color 0.3s;
     overflow:hidden;
     position:relative;
     z-index:10;
@@ -118,6 +133,7 @@
     padding:14px 20px;border-bottom:1px solid var(--border);
     gap:16px;flex-wrap:wrap;flex-shrink:0;
     background: var(--bg);
+    transition: background 0.3s, border-color 0.3s;
   }
   .topbar-title h2{font-size:.95rem;font-weight:600;letter-spacing:-.01em}
   .topbar-title p{font-size:.7rem;color:var(--muted);margin-top:2px}
@@ -133,7 +149,7 @@
   }
   .btn:hover{background:var(--surface);border-color:var(--border-hover)}
   .btn.primary{background:var(--surface);border-color:var(--border-hover);color:var(--text)}
-  .btn.primary:hover{background:var(--surface-hover);border-color:#444}
+  .btn.primary:hover{background:var(--surface-hover);border-color:var(--border-hover)}
   .btn svg{width:13px;height:13px;flex-shrink:0}
 
   .content{flex:1;overflow-y:auto;padding:20px;padding-bottom:80px}
@@ -174,6 +190,7 @@
   }
   .card:hover{border-color:var(--border-hover); background:var(--surface-hover);}
   .card.revealed { border-color: #444; background: var(--bg); }
+  [data-theme="light"] .card.revealed { border-color: var(--border-hover); background: var(--bg); }
   
   .card-head{display:flex;align-items:center;gap:10px}
   .icon{
@@ -183,13 +200,22 @@
     flex-shrink:0;overflow:hidden;
   }
   .card:hover .icon, .card.revealed .icon { background: var(--surface); }
-  .icon img{width:16px;height:16px;object-fit:contain}
+  
+  /* Melhoria nos Favicons */
+  .icon img{
+    width:16px;height:16px;object-fit:contain;
+    filter: brightness(0.9) contrast(1.1);
+  }
+  [data-theme="light"] .icon img {
+    filter: none;
+  }
+
   .icon .fallback{font-weight:700;font-size:.7rem;color:var(--text)}
   
   .meta{min-width:0;flex:1}
   .meta .name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .meta .name a { color: inherit; text-decoration: none; transition: color .15s; pointer-events: auto; }
-  .meta .name a:hover { color: #fff; text-decoration: underline; }
+  .meta .name a:hover { color: var(--text); text-decoration: underline; }
   .meta .env{font-family:var(--mono);font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   
   .del{
@@ -200,10 +226,10 @@
     z-index: 2;
   }
   .card:hover .del{opacity:1}
-  .del:hover{color:#ff5c7a;background:rgba(255,92,122,.1)}
+  .del:hover{color:var(--danger);background:rgba(255,92,122,.1)}
   .del svg{width:14px;height:14px}
 
-  /* Key Row - O segredo está aqui */
+  /* Key Row */
   .key-row{
     display:flex;align-items:center;
     background:var(--bg);border:1px solid var(--border);
@@ -211,7 +237,7 @@
     transition:all .15s ease;
     min-height: 36px;
   }
-  .card.revealed .key-row { border-color: #333; }
+  .card.revealed .key-row { border-color: var(--border-hover); }
   
   .key-text{
     flex:1;font-family:var(--mono);font-size:.7rem;
@@ -247,7 +273,40 @@
     width: 100%;
   }
 
-  /* Barra de Ações Inferior (Fixada) */
+  /* Painel de Configurações */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 16px;
+  }
+  .settings-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .settings-card h3 { font-size: .85rem; font-weight: 600; }
+  .settings-card p { font-size: .7rem; color: var(--muted); line-height: 1.5; }
+  .settings-card code { font-family: var(--mono); background: var(--bg); padding: 2px 4px; border-radius: 3px; font-size: .65rem; color: var(--text); }
+  
+  .path-box {
+    background: var(--bg);
+    border: 1px dashed var(--border-hover);
+    padding: 12px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    word-break: break-all;
+  }
+  
+  /* Barra de Ações Inferior */
   .action-bar {
     position: fixed;
     bottom: 20px;
@@ -261,7 +320,11 @@
     display: flex;
     gap: 4px;
     z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  [data-theme="light"] .action-bar {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   }
   .action-bar .btn {
     border: none;
@@ -300,8 +363,8 @@
     opacity:0; transition:all .2s; z-index:200; pointer-events:none;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  .toast.ok{border-color:var(--border-hover); border-left:3px solid #3ddc97;}
-  .toast.err{border-color:var(--border-hover); border-left:3px solid #ff5c7a;}
+  .toast.ok{border-color:var(--border-hover); border-left:3px solid var(--accent);}
+  .toast.err{border-color:var(--border-hover); border-left:3px solid var(--danger);}
 
   @media (max-width:768px){
     .sidebar{width:var(--sidebar-w)}
@@ -310,7 +373,7 @@
     .nav-item{justify-content:center;padding:8px}
     .topbar{padding:12px 16px}
     .content{padding:16px; padding-bottom: 80px;}
-    .grid{grid-template-columns:1fr}
+    .grid,.settings-grid{grid-template-columns:1fr}
     .action-bar { width: 90%; justify-content: space-around; }
   }
 </style>
@@ -321,21 +384,19 @@
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark">
-        <!-- Ícone Indígena Amazônico -->
         <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <g fill="#09090b" stroke="#ededed" stroke-width="1.5" stroke-linejoin="miter" stroke-linecap="butt">
+          <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter" stroke-linecap="butt">
             <path d="M37.0 17.0 Q40.3 9.5 43 2 Q40.0 9.5 37.0 17.0Z"/>
             <path d="M34.0 16.5 Q34.0 8.6 34 0.8 Q34.0 8.6 34.0 16.5Z"/>
             <path d="M31.0 17.0 Q27.5 9.8 24 2.5 Q27.5 9.8 31.0 17.0Z"/>
             <path d="M28.5 18.5 Q22.3 12.8 16 7 Q22.3 12.8 28.5 18.5Z"/>
             <path d="M26.5 20.5 Q17.8 17.3 9 14 Q17.8 17.3 26.5 20.5Z"/>
-            <path d="M37 17L41.3 3.5M34 16.5L34 2.3M31 17L25.8 4M28.5 18.5L17.9 9.1M26.5 20.5L11.7 15.3" fill="none" stroke-width="0.8"/>
             <path d="M25 59 L6 64 L58 64 L41 59 L40 50 L29 46Z"/>
             <path d="M38 15 C29 12 21 17 19.5 27 C18 38 19 50 14 62 L25 61 C27 51 27 43 29.5 36 C30.5 29 32.5 23 38 20Z"/>
             <path d="M24.5 30 L21.5 52 M27.5 28 L25 54 M22 36 L18 56" fill="none" stroke-width="0.9"/>
             <path d="M38 15 L43 19 L45 24 L44 27 L49.5 33.5 L45.5 36 L46.5 38 L45 39.5 L46 41 L44.5 43 L47.5 47.5 L44 51.5 L33 51 L29.5 41 L28.5 29 L31 19Z"/>
           </g>
-          <g fill="none" stroke="#ededed" stroke-width="1.5" stroke-linecap="butt" stroke-linejoin="miter">
+          <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="butt" stroke-linejoin="miter">
             <path d="M35.5 23 L44.6 26.4" stroke-width="2.85"/>
             <path d="M38 29.4 L43.2 28.4"/>
             <path d="M38.6 31.6 L42.4 30.8" stroke-width="0.8"/>
@@ -347,29 +408,34 @@
             <path d="M30.2 33 Q26.6 35.5 30 41" stroke-width="1.1"/>
             <path d="M33 52 L35 59" stroke-width="0.8"/>
           </g>
-          <circle cx="38.2" cy="29.2" r="0.9" fill="#ededed"/>
-          <circle cx="28.6" cy="43.2" r="1.3" fill="none" stroke="#ededed" stroke-width="0.9"/>
-          <path d="M29.5 19.5 L43 21.8" stroke="#ededed" stroke-width="2.7" fill="none"/>
-          <path d="M30 22.3 L42.6 24.4" stroke="#ededed" stroke-width="0.8" fill="none" stroke-dasharray="1.2 1.2"/>
-          <path d="M27.2 56.5 L27.5 59.7 L28.2 56.5Z" fill="#ededed"/>
-          <path d="M28.8 57.4 L29.1 60.6 L29.8 57.4Z" fill="#ededed"/>
-          <path d="M30.6 58.1 L30.9 61.3 L31.6 58.1Z" fill="#ededed"/>
-          <path d="M32.6 58.6 L32.9 61.8 L33.6 58.6Z" fill="#ededed"/>
-          <path d="M34.8 58.9 L35.1 62.1 L35.8 58.9Z" fill="#ededed"/>
-          <path d="M37.2 59.0 L37.5 62.2 L38.2 59.0Z" fill="#ededed"/>
-          <path d="M39.8 58.9 L40.1 62.1 L40.8 58.9Z" fill="#ededed"/>
+          <circle cx="38.2" cy="29.2" r="0.9" fill="currentColor"/>
+          <circle cx="28.6" cy="43.2" r="1.3" fill="none" stroke="currentColor" stroke-width="0.9"/>
+          <path d="M29.5 19.5 L43 21.8" stroke="currentColor" stroke-width="2.7" fill="none"/>
+          <path d="M30 22.3 L42.6 24.4" stroke="currentColor" stroke-width="0.8" fill="none" stroke-dasharray="1.2 1.2"/>
         </svg>
       </div>
       <div class="brand-text">
         <h1>Codajás</h1>
       </div>
     </div>
+    
     <nav class="nav" id="nav">
       <div class="nav-label">Gerenciamento</div>
       <button class="nav-item active" data-panel="keys">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
         <span>API Keys</span>
         <span class="badge" id="navCount">0</span>
+      </button>
+      
+      <div class="nav-label" style="margin-top:auto">Sistema</div>
+      <button class="nav-item" id="themeToggle">
+        <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg id="icon-sun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <span>Mudar Tema</span>
+      </button>
+      <button class="nav-item" data-panel="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Configurações</span>
       </button>
     </nav>
   </aside>
@@ -407,6 +473,74 @@
           </div>
         </div>
       </section>
+
+      <!-- PANEL: SETTINGS -->
+      <section class="panel" id="panel-settings">
+        <div class="settings-grid">
+          
+          <!-- Exportação FCC -->
+          <div class="settings-card" style="grid-column: 1/-1;">
+            <h3>Exportar para o Free Claude Code</h3>
+            <p>O Free Claude Code lê suas chaves de um arquivo <code>.env</code> na sua pasta de usuário. Siga os passos abaixo para aplicar as chaves deste painel no seu terminal.</p>
+            
+            <div style="margin-top: 8px;">
+              <label style="font-size:.65rem; color:var(--muted); display:block; margin-bottom:6px;">Caminho esperado do arquivo:</label>
+              <div class="path-box">
+                <span id="fccPathDisplay">C:\Users\SeuUsuario\.fcc\.env</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; flex-wrap: wrap; margin-top: 8px;">
+              <button class="btn primary" id="downloadEnvBtn" style="flex:1;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                1. Baixar .env
+              </button>
+              <button class="btn primary" id="downloadBatBtn" style="flex:1;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                2. Baixar Instalador (.bat)
+              </button>
+            </div>
+            <p style="font-size:.65rem; color:var(--muted); margin-top:8px;">
+              <strong>Dica:</strong> Baixe o arquivo <code>.env</code> e o script <code>.bat</code> na mesma pasta (ex: Downloads) e clique duas vezes no <code>.bat</code>. Ele moverá a chave para a pasta correta automaticamente.
+            </p>
+          </div>
+
+          <!-- Integração via API -->
+          <div class="settings-card">
+            <h3>Envio via API Local</h3>
+            <p>Se o servidor do FCC estiver rodando na sua máquina, o painel tenta enviar as chaves via HTTP para a porta 8082.</p>
+            
+            <div class="field" style="margin-top:8px">
+              <label>URL do Admin FCC</label>
+              <input type="text" id="adminUrl" value="http://127.0.0.1:8082/admin">
+            </div>
+            <div class="field">
+              <label>Endpoint (opcional)</label>
+              <input type="text" id="adminEndpoint" placeholder="/api/config/import">
+            </div>
+            
+            <div style="display:flex; gap:8px; margin-top: 4px;">
+              <button class="btn primary" id="sendAdminBtn" style="flex:1;">Enviar via API</button>
+              <button class="btn" id="previewEnvBtn">Ver Texto</button>
+            </div>
+            <div id="adminResult" style="font-size:.65rem; font-family:var(--mono); display:none; margin-top:8px;"></div>
+            <textarea id="envPreview" style="display:none; margin-top:8px; width:100%; min-height:100px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:.7rem; padding:8px; border-radius:4px; resize:vertical; outline:none"></textarea>
+          </div>
+
+          <!-- Sobre -->
+          <div class="settings-card">
+            <h3>Sobre o Projeto</h3>
+            <p>O <strong>Free Claude Code</strong> permite usar modelos de linguagem no terminal sem custos de API, roteando requisições.</p>
+            <div style="margin-top: 10px;">
+              <a href="https://github.com/Alishahryar1/free-claude-code" target="_blank" class="btn" style="text-decoration:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                Ver Repositório no GitHub
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
     </div>
   </div>
 </div>
@@ -427,7 +561,6 @@
   </button>
 </div>
 
-<!-- Input de arquivo oculto -->
 <input type="file" id="fileInput" accept=".env" style="display:none">
 
 <!-- Modal de Adicionar -->
@@ -560,6 +693,61 @@
   const dashboardPanel = document.getElementById('dashboardPanel');
   let chartCanvas = document.getElementById('usageChart');
 
+  // Descobrir o nome de usuário do Windows de forma dinâmica para mostrar o caminho
+  let winUser = "SeuUsuario";
+  const ua = navigator.userAgent;
+  if (ua.includes("Windows")) {
+    const match = ua.match(/Windows NT [\d.]+; (?:Win64; x64|WOW64|Win64|x64)\)/);
+  }
+  document.getElementById('fccPathDisplay').textContent = `C:\\Users\\${winUser}\\.fcc\\.env`;
+
+  // Lógica de Alternância de Tema
+  const themeToggle = document.getElementById('themeToggle');
+  const iconMoon = document.getElementById('icon-moon');
+  const iconSun = document.getElementById('icon-sun');
+  
+  let currentTheme = localStorage.getItem('theme') || 'dark';
+  if (currentTheme === 'light') {
+    document.body.setAttribute('data-theme', 'light');
+    iconMoon.style.display = 'none';
+    iconSun.style.display = 'block';
+  }
+
+  themeToggle.addEventListener('click', () => {
+    if (document.body.getAttribute('data-theme') === 'light') {
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+      iconMoon.style.display = 'block';
+      iconSun.style.display = 'none';
+    } else {
+      document.body.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+      iconMoon.style.display = 'none';
+      iconSun.style.display = 'block';
+    }
+    if(chartInstance) renderChart();
+  });
+
+  // Navegação de Abas
+  document.getElementById('nav').addEventListener('click', (e) => {
+    const item = e.target.closest('.nav-item');
+    if (!item || !item.dataset.panel) return;
+    
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + item.dataset.panel).classList.add('active');
+    
+    const info = {
+      keys: { title: 'API Keys', sub: 'Clique no card para revelar a chave' },
+      settings: { title: 'Configurações', sub: 'Integração e preferências' }
+    };
+    
+    document.getElementById('pageTitle').textContent = info[item.dataset.panel].title;
+    document.getElementById('pageSub').textContent = info[item.dataset.panel].sub;
+  });
+
   function render(){
     const q = filter.trim().toLowerCase();
     const list = apis.filter(a => !q || a.name.toLowerCase().includes(q) || a.env.toLowerCase().includes(q));
@@ -577,7 +765,6 @@
     list.forEach(api => {
       const isRevealed = revealed.has(api.id);
       const card = document.createElement('div');
-      // A classe 'revealed' controla o estado visual do card
       card.className = `card ${isRevealed ? 'revealed' : ''}`;
       card.dataset.id = api.id;
       
@@ -628,6 +815,14 @@
       chartInstance.destroy();
     }
 
+    const isLight = document.body.getAttribute('data-theme') === 'light';
+    const gridColor = isLight ? '#e9ecef' : '#222225';
+    const textColor = isLight ? '#71717a' : '#7a7a85';
+    const bgUsed = isLight ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 92, 122, 0.1)';
+    const bgRem = isLight ? 'rgba(16, 185, 129, 0.1)' : 'rgba(61, 220, 151, 0.1)';
+    const colUsed = isLight ? '#ef4444' : '#ff5c7a';
+    const colRem = isLight ? '#10b981' : '#3ddc97';
+
     const ctx = chartCanvas.getContext('2d');
     chartInstance = new Chart(ctx, {
       type: 'line',
@@ -637,45 +832,53 @@
           {
             label: 'Usado (%)',
             data: dataUso,
-            borderColor: '#ff5c7a',
-            backgroundColor: 'rgba(255, 92, 122, 0.1)',
+            borderColor: colUsed,
+            backgroundColor: bgUsed,
             borderWidth: 1.5,
             pointRadius: 3,
-            pointBackgroundColor: '#ff5c7a',
+            pointBackgroundColor: colUsed,
             tension: 0.3,
-            fill: true
+            fill: true,
+            yAxisID: 'y',
           },
           {
             label: 'Restante (%)',
             data: dataRestante,
-            borderColor: '#3ddc97',
-            backgroundColor: 'rgba(61, 220, 151, 0.1)',
+            borderColor: colRem,
+            backgroundColor: bgRem,
             borderWidth: 1.5,
             pointRadius: 3,
-            pointBackgroundColor: '#3ddc97',
+            pointBackgroundColor: colRem,
             tension: 0.3,
-            fill: true
+            fill: true,
+            yAxisID: 'y'
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+          y: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+          }
+        },
         plugins: {
           legend: {
-            labels: { color: '#7a7a85', font: { size: 10, family: 'sans-serif' } }
+            labels: { color: textColor, font: { size: 10, family: 'sans-serif' } }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
             max: 100,
-            grid: { color: '#222225' },
-            ticks: { color: '#7a7a85', font: { size: 10 }, callback: function(value) { return value + '%'; } }
+            grid: { color: gridColor },
+            ticks: { color: textColor, font: { size: 10 }, callback: function(value) { return value + '%'; } }
           },
           x: {
             grid: { display: false },
-            ticks: { color: '#7a7a85', font: { size: 10 } }
+            ticks: { color: textColor, font: { size: 10 } }
           }
         }
       }
@@ -710,9 +913,7 @@
     }
   }
 
-  // Interação do Grid: Clicar no Card revela a chave
   grid.addEventListener('click', e => {
-    // Se clicou no botão de deletar, não aciona a revelação
     if (e.target.closest('.del')) {
       const del = e.target.closest('.del');
       const id = del.dataset.id;
@@ -727,23 +928,17 @@
       return;
     }
 
-    // Se clicou no link do nome, não aciona a revelação (deixa o link abrir)
     if (e.target.closest('a')) return;
 
-    // Senão, alterna a visibilidade do card
     const card = e.target.closest('.card');
     if (card) {
       const id = card.dataset.id;
       if (revealed.has(id)) {
         revealed.delete(id);
+        card.classList.remove('revealed');
       } else {
         revealed.add(id);
-      }
-      // Re-renderiza apenas a classe do card para ser extremamente rápido
-      if (revealed.has(id)) {
         card.classList.add('revealed');
-      } else {
-        card.classList.remove('revealed');
       }
     }
   });
@@ -761,6 +956,7 @@
     filter = e.target.value; render();
   });
 
+  // Modal Add
   const addModal = document.getElementById('addModal');
   const newName = document.getElementById('newName');
   const newEnv = document.getElementById('newEnv');
@@ -795,22 +991,25 @@
     if (e.target === addModal) addModal.classList.remove('open');
   });
 
-  document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
-  document.getElementById('exportQuickBtn').addEventListener('click', () => {
-    const stamp = new Date().toISOString().slice(0,10);
-    const content = apis.map(a => {
+  function generateEnvContent() {
+    return apis.map(a => {
       const needsQuote = /[\n\r"]/.test(a.key) || a.key.startsWith(' ') || a.key.endsWith(' ');
       const val = needsQuote ? '"' + a.key.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n') + '"' : a.key;
       return `${a.env}=${val}`;
     }).join('\n') + '\n';
-    
+  }
+
+  // Import / Export
+  document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
+  document.getElementById('exportQuickBtn').addEventListener('click', () => {
+    const content = generateEnvContent();
     const blob = new Blob([content], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `codajas-${stamp}.env`;
+    a.href = url; a.download = `.env`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast('Exportado','ok');
+    toast('Arquivo .env baixado', 'ok');
   });
 
   const fileInput = document.getElementById('fileInput');
@@ -863,6 +1062,117 @@
     };
     reader.readAsText(file);
   }
+
+  // --- Novas Funções de Exportação para o Windows ---
+
+  // 1. Baixar o arquivo .env
+  document.getElementById('downloadEnvBtn').addEventListener('click', () => {
+    const content = generateEnvContent();
+    const blob = new Blob([content], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `.env`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('.env baixado. Agora baixe o Instalador.', 'ok');
+  });
+
+  // 2. Baixar o script .bat que move o arquivo
+  document.getElementById('downloadBatBtn').addEventListener('click', () => {
+    const batContent = `@echo off
+title Instalador Free Claude Code - Codajas
+echo =======================================================
+echo  Instalador de Chaves - Codajas para Free Claude Code
+echo =======================================================
+echo.
+
+set "TARGET_DIR=%USERPROFILE%\\.fcc"
+set "TARGET_FILE=%TARGET_DIR%\\.env"
+set "SOURCE_FILE=%~dp0.env"
+
+if not exist "%SOURCE_FILE%" (
+    echo [ERRO] O arquivo .env nao foi encontrado nesta pasta.
+    echo Certifique-se de que o .env baixado esta na mesma pasta deste script.
+    pause
+    exit /b
+)
+
+if not exist "%TARGET_DIR%" (
+    echo Criando a pasta .fcc no seu perfil...
+    mkdir "%TARGET_DIR%"
+)
+
+echo Copiando as chaves para: %TARGET_FILE%
+copy /Y "%SOURCE_FILE%" "%TARGET_FILE%" >nul
+
+if %ERRORLEVEL% equ 0 (
+    echo.
+    echo [SUCESSO] As chaves foram instaladas com sucesso!
+    echo Voce ja pode fechar esta janela e rodar o fcc-server.
+) else (
+    echo.
+    echo [ERRO] Nao foi possivel copiar o arquivo. Verifique as permissoes.
+)
+
+echo.
+pause
+`;
+    const blob = new Blob([batContent], {type: 'application/bat'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `instalar_codajas.bat`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Instalador baixado. Execute-o na pasta do .env.', 'ok');
+  });
+
+  // Integração Admin
+  document.getElementById('previewEnvBtn').addEventListener('click', () => {
+    const ta = document.getElementById('envPreview');
+    if (ta.style.display === 'none' || !ta.style.display) {
+      ta.value = generateEnvContent();
+      ta.style.display = 'block';
+    } else {
+      ta.style.display = 'none';
+    }
+  });
+
+  document.getElementById('sendAdminBtn').addEventListener('click', async () => {
+    const base = document.getElementById('adminUrl').value.trim();
+    const endpoint = document.getElementById('adminEndpoint').value.trim();
+    const url = endpoint ? new URL(endpoint, base).href : base;
+    const envContent = generateEnvContent();
+    const result = document.getElementById('adminResult');
+    
+    result.style.display = 'block';
+    result.style.color = 'var(--muted)';
+    result.textContent = `Enviando...`;
+    
+    try{
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: JSON.stringify({ format:'env', content: envContent, entries: apis.map(a => ({ env: a.env, key: a.key, name: a.name })) }),
+        mode: 'cors'
+      });
+      const text = await resp.text().catch(() => '');
+      if (resp.ok){
+        result.style.color = 'var(--accent)';
+        result.textContent = `Sucesso (HTTP ${resp.status}).`;
+        toast('Enviado','ok');
+      } else {
+        result.style.color = 'var(--danger)';
+        result.textContent = `Falhou HTTP ${resp.status}. Copiando conteúdo...`;
+        await navigator.clipboard.writeText(envContent).catch(()=>{});
+        toast('Falhou, copiado','err');
+      }
+    }catch(err){
+      result.style.color = 'var(--danger)';
+      result.textContent = `Erro CORS. Conteúdo copiado. Cole manualmente no Admin.`;
+      await navigator.clipboard.writeText(envContent).catch(()=>{});
+      toast('Copiado','err');
+    }
+  });
 
   window.addEventListener('load', () => {
     loadFromFirebase();
