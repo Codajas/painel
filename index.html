@@ -4,421 +4,353 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Codajás</title>
-<!-- Favicon Próprio (Preto, sem fundo, minimalista) -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2318181b' stroke-width='2.5' stroke-linejoin='miter' stroke-linecap='butt'%3E%3Cpath d='M37.0 17.0 Q40.3 9.5 43 2 Q40.0 9.5 37.0 17.0Z'/%3E%3Cpath d='M34.0 16.5 Q34.0 8.6 34 0.8 Q34.0 8.6 34.0 16.5Z'/%3E%3Cpath d='M31.0 17.0 Q27.5 9.8 24 2.5 Q27.5 9.8 31.0 17.0Z'/%3E%3Cpath d='M28.5 18.5 Q22.3 12.8 16 7 Q22.3 12.8 28.5 18.5Z'/%3E%3Cpath d='M26.5 20.5 Q17.8 17.3 9 14 Q17.8 17.3 26.5 20.5Z'/%3E%3Cpath d='M25 59 L6 64 L58 64 L41 59 L40 50 L29 46Z'/%3E%3Cpath d='M38 15 C29 12 21 17 19.5 27 C18 38 19 50 14 62 L25 61 C27 51 27 43 29.5 36 C30.5 29 32.5 23 38 20Z'/%3E%3Cpath d='M38 15 L43 19 L45 24 L44 27 L49.5 33.5 L45.5 36 L46.5 38 L45 39.5 L46 41 L44.5 43 L47.5 47.5 L44 51.5 L33 51 L29.5 41 L28.5 29 L31 19Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%2318181b' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M35.5 23 L44.6 26.4' stroke-width='4'/%3E%3Cpath d='M38 29.4 L43.2 28.4'/%3E%3Cpath d='M31 43 L36 48.5 L43 49.5' stroke-width='2'/%3E%3C/g%3E%3Ccircle cx='38.2' cy='29.2' r='1.5' fill='%2318181b'/%3E%3C/svg%3E">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="icon" id="favicon" type="image/svg+xml" href="">
 <style>
   :root {
     --bg: #09090b;
     --surface: #121214;
-    --surface-hover: #1c1c1f;
-    --border: #222225;
-    --border-hover: #333338;
+    --surface-hover: #1a1a1d;
+    --border: #232327;
+    --border-hover: #38383e;
     --text: #ededed;
     --muted: #7a7a85;
     --accent: #3ddc97;
+    --accent-soft: rgba(61, 220, 151, .12);
     --danger: #ff5c7a;
     --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --sidebar-w: 56px;
-    --sidebar-expanded: 210px;
+    --sidebar-w: 60px;
+    --sidebar-expanded: 224px;
+    --radius: 10px;
   }
 
   [data-theme="light"] {
-    --bg: #f8f9fa;
+    --bg: #f6f7f8;
     --surface: #ffffff;
     --surface-hover: #f1f3f5;
-    --border: #e9ecef;
-    --border-hover: #dee2e6;
+    --border: #e6e8eb;
+    --border-hover: #d3d7dc;
     --text: #18181b;
     --muted: #71717a;
-    --accent: #10b981;
+    --accent: #0e9f6e;
+    --accent-soft: rgba(14, 159, 110, .1);
     --danger: #ef4444;
   }
 
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
-    transition: background 0.3s, color 0.3s;
+    transition: background .3s, color .3s;
   }
-  ::-webkit-scrollbar{width:6px;height:6px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:var(--border-hover);border-radius:4px}
-
-  .app{display:flex;height:100vh}
-
-  /* Sidebar */
-  .sidebar{
-    width:var(--sidebar-w);flex-shrink:0;
-    background:var(--surface);
-    border-right:1px solid var(--border);
-    display:flex;flex-direction:column;
-    padding:14px 0;
-    transition:width .15s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, border-color 0.3s;
-    overflow:hidden;
-    position:relative;
-    z-index:10;
-  }
-  .sidebar.expanded, .sidebar:hover{width:var(--sidebar-expanded)}
-
-  .brand{
-    display:flex;align-items:center;
-    padding:0 16px;margin-bottom:24px;
-    height:28px;flex-shrink:0;
-  }
-  .brand-mark{
-    width:24px;height:24px;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;
-    color:var(--text);
-  }
-  .brand-mark svg{width:24px;height:24px}
-  
-  .brand-text{
-    display:flex;flex-direction:column;
-    opacity:0;transition:opacity .15s;
-    white-space:nowrap;margin-left:12px;
-  }
-  .sidebar:hover .brand-text{opacity:1}
-  .brand-text h1{font-size:.95rem;font-weight:600;letter-spacing:-.01em}
-
-  .nav{display:flex;flex-direction:column;gap:2px;flex:1;padding:0 8px}
-  .nav-label{
-    font-size:.55rem;font-weight:600;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.08em;
-    padding:0 8px;margin:12px 0 4px;
-    white-space:nowrap;opacity:0;transition:opacity .15s;
-  }
-  .sidebar:hover .nav-label{opacity:1}
-
-  .nav-item{
-    display:flex;align-items:center;
-    padding:8px;border-radius:4px;
-    background:transparent;border:none;
-    color:var(--muted);font-size:.78rem;font-weight:500;
-    cursor:pointer;text-align:left;width:100%;
-    transition:all .1s;white-space:nowrap;
-    height:34px;
-  }
-  .nav-item:hover{background:var(--surface-hover);color:var(--text)}
-  .nav-item.active{background:var(--surface-hover);color:var(--text)}
-  
-  .nav-item svg{
-    width:16px;height:16px;flex-shrink:0;
-  }
-  
-  .nav-item span{
-    opacity:0;transition:opacity .15s;
-    margin-left:12px;
-  }
-  .sidebar:hover .nav-item span{opacity:1}
-  
-  .nav-item .badge{
-    margin-left:auto;font-size:.55rem;
-    background:var(--border);color:var(--muted);
-    padding:1px 5px;border-radius:4px;
-    font-weight:600;opacity:0;transition:opacity .15s;
-  }
-  .sidebar:hover .nav-item .badge{opacity:1}
-
-  /* Main */
-  .main{flex:1;display:flex;flex-direction:column;min-width:0}
-
-  /* Topbar */
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 20px;border-bottom:1px solid var(--border);
-    gap:16px;flex-wrap:wrap;flex-shrink:0;
-    background: var(--bg);
-    transition: background 0.3s, border-color 0.3s;
-  }
-  .topbar-title h2{font-size:.95rem;font-weight:600;letter-spacing:-.01em}
-  .topbar-title p{font-size:.7rem;color:var(--muted);margin-top:2px}
-
-  /* Botões */
-  .topbar-actions{display:flex;gap:6px;flex-wrap:wrap}
-  .btn{
-    display:inline-flex;align-items:center;gap:6px;
-    background:transparent;border:1px solid var(--border);
-    color:var(--text);font-size:.72rem;font-weight:500;
-    padding:6px 12px;border-radius:4px;cursor:pointer;
-    transition:all .1s;white-space:nowrap;height:28px;
-  }
-  .btn:hover{background:var(--surface);border-color:var(--border-hover)}
-  .btn.primary{background:var(--surface);border-color:var(--border-hover);color:var(--text)}
-  .btn.primary:hover{background:var(--surface-hover);border-color:var(--border-hover)}
-  .btn svg{width:13px;height:13px;flex-shrink:0}
-
-  .content{flex:1;overflow-y:auto;padding:20px;padding-bottom:80px}
-  .panel{display:none}
-  .panel.active{display:block;animation:fade .15s ease}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
-
-  /* Toolbar */
-  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-  .search{flex:1;min-width:200px;position:relative}
-  .search svg{
-    position:absolute;left:10px;top:50%;transform:translateY(-50%);
-    width:14px;height:14px;color:var(--muted);pointer-events:none;
-  }
-  .search input{
-    width:100%;background:var(--surface);border:1px solid var(--border);
-    color:var(--text);font-size:.75rem;padding:8px 10px 8px 32px;
-    border-radius:4px;outline:none;transition:border-color .1s;
-  }
-  .search input:focus{border-color:var(--border-hover)}
-  .search input::placeholder{color:var(--muted)}
-  .count{font-size:.7rem;color:var(--muted);white-space:nowrap}
-
-  /* Grid */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:12px;
-  }
-  .card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:4px;padding:14px;
-    display:flex;flex-direction:column;gap:12px;
-    transition:all .15s ease;
-    cursor:pointer;
-    position:relative;
-  }
-  .card:hover{border-color:var(--border-hover); background:var(--surface-hover);}
-  .card.revealed { border-color: #444; background: var(--bg); }
-  [data-theme="light"] .card.revealed { border-color: var(--border-hover); background: var(--bg); }
-  
-  .card-head{display:flex;align-items:center;gap:10px}
-  .icon{
-    width:32px;height:32px;border-radius:4px;
-    background:var(--bg);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;overflow:hidden;
-  }
-  .card:hover .icon, .card.revealed .icon { background: var(--surface); }
-  
-  /* Melhoria nos Favicons */
-  .icon img{
-    width:16px;height:16px;object-fit:contain;
-    filter: brightness(0.9) contrast(1.1);
-  }
-  [data-theme="light"] .icon img {
-    filter: none;
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(600px 300px at 85% -5%, var(--accent-soft), transparent 70%);
   }
 
-  .icon .fallback{font-weight:700;font-size:.7rem;color:var(--text)}
-  
-  .meta{min-width:0;flex:1}
-  .meta .name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .meta .name a { color: inherit; text-decoration: none; transition: color .15s; pointer-events: auto; }
-  .meta .name a:hover { color: var(--text); text-decoration: underline; }
-  .meta .env{font-family:var(--mono);font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-  
-  .del{
-    background:transparent;border:none;color:var(--muted);
-    cursor:pointer;padding:4px;border-radius:4px;
-    display:flex;align-items:center;justify-content:center;
-    opacity:0;transition:all .1s;
-    z-index: 2;
-  }
-  .card:hover .del{opacity:1}
-  .del:hover{color:var(--danger);background:rgba(255,92,122,.1)}
-  .del svg{width:14px;height:14px}
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
 
-  /* Key Row */
-  .key-row{
-    display:flex;align-items:center;
-    background:var(--bg);border:1px solid var(--border);
-    border-radius:4px;padding:8px 10px;
-    transition:all .15s ease;
-    min-height: 36px;
+  .app { display: flex; height: 100vh; position: relative; z-index: 1; }
+  .hero { position: fixed; right: 3vw; bottom: 0; height: 92vh; aspect-ratio: 238 / 264; max-width: 60vw; color: var(--text); opacity: .2; pointer-events: none; z-index: 0; transition: opacity .3s; }
+  .hero svg { width: 100%; height: 100%; display: block; }
+  [data-theme="light"] .hero { opacity: .22; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 16px 0;
+    transition: width .22s ease, background .3s, border-color .3s;
+    overflow: hidden; position: relative; z-index: 10;
+  }
+  .sidebar:hover { width: var(--sidebar-expanded); }
+
+  .brand { display: flex; align-items: center; padding: 0 11px; margin-bottom: 22px; height: 46px; flex-shrink: 0; }
+  .brand-mark { width: 38px; height: 46px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text); }
+  .brand-mark svg { width: 38px; height: 46px; }
+  .brand-text { opacity: 0; transition: opacity .2s; white-space: nowrap; margin-left: 12px; }
+  .sidebar:hover .brand-text { opacity: 1; }
+  .brand-text h1 { font-size: .95rem; font-weight: 600; letter-spacing: -.01em; }
+  .brand-text small { display: block; font-size: .6rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 1px; }
+
+  .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; padding: 0 8px; }
+  .nav-label {
+    font-size: .55rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    padding: 0 10px; margin: 12px 0 4px; white-space: nowrap; opacity: 0; transition: opacity .2s;
+  }
+  .sidebar:hover .nav-label { opacity: 1; }
+
+  .nav-item {
+    position: relative; display: flex; align-items: center;
+    padding: 0 12px; border-radius: 8px;
+    background: transparent; border: none; color: var(--muted);
+    font-size: .78rem; font-weight: 500; cursor: pointer; text-align: left; width: 100%;
+    transition: all .12s; white-space: nowrap; height: 36px;
+  }
+  .nav-item:hover { background: var(--surface-hover); color: var(--text); }
+  .nav-item.active { background: var(--surface-hover); color: var(--text); }
+  .nav-item.active::before {
+    content: ""; position: absolute; left: -8px; top: 9px; bottom: 9px; width: 2px;
+    border-radius: 2px; background: var(--accent);
+  }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-item span { opacity: 0; transition: opacity .2s; margin-left: 12px; }
+  .sidebar:hover .nav-item span { opacity: 1; }
+  .nav-item .badge {
+    margin-left: auto; font-size: .58rem; background: var(--border); color: var(--muted);
+    padding: 1px 6px; border-radius: 10px; font-weight: 600; opacity: 0; transition: opacity .2s;
+  }
+  .sidebar:hover .nav-item .badge { opacity: 1; margin-left: auto; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(8px);
+  }
+  .topbar-title h2 { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+  .topbar-title p { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+
+  .content { flex: 1; overflow-y: auto; padding: 24px 28px; padding-bottom: 110px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade .22s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+    font-size: .75rem; font-weight: 500; padding: 0 14px; border-radius: 8px; cursor: pointer;
+    transition: all .15s; height: 34px; white-space: nowrap; font-family: inherit;
+  }
+  .btn:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+  .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn.primary:hover { opacity: .88; }
+  .btn svg { width: 14px !important; height: 14px !important; flex-shrink: 0; }
+
+  /* ---------- Toolbar / Grid ---------- */
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .search { flex: 1; position: relative; max-width: 420px; }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--muted); pointer-events: none; }
+  .search input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    font-size: .78rem; padding: 0 12px 0 34px; height: 36px; border-radius: 8px; outline: none;
+    transition: border-color .15s, box-shadow .15s; font-family: inherit;
+  }
+  .search input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .count { font-size: .75rem; color: var(--muted); margin-left: auto; }
+  .count b { color: var(--text); font-weight: 600; }
+
+  /* Cards: todos com o MESMO tamanho */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: 120px;
+    gap: 14px;
+  }
+  .card {
+    height: 100%; min-width: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: border-color .15s, background .15s, transform .15s, box-shadow .15s;
+    cursor: pointer; overflow: hidden; position: relative;
+  }
+  .card::after {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--accent); opacity: 0; transition: opacity .15s;
+  }
+  .card:hover { border-color: var(--border-hover); background: var(--surface-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.14); }
+  .card.revealed { border-color: var(--border-hover); }
+  .card.revealed::after { opacity: 1; }
+
+  .card-head { display: flex; align-items: center; gap: 12px; height: 34px; flex-shrink: 0; }
+  .icon {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;
+  }
+  .icon img { width: 18px; height: 18px; object-fit: contain; }
+  .icon .fallback { font-weight: 700; font-size: .7rem; color: var(--text); letter-spacing: .02em; }
+
+  .meta { min-width: 0; flex: 1; }
+  .meta .name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta .name a { color: inherit; text-decoration: none; }
+  .meta .name a:hover { text-decoration: underline; }
+  .meta .env { font-family: var(--mono); font-size: .64rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+
+  .card-actions { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+  .card:hover .card-actions { opacity: 1; }
+  .icon-btn {
+    background: transparent; border: none; color: var(--muted); cursor: pointer;
+    width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all .15s;
+  }
+  .icon-btn:hover { color: var(--text); background: var(--border); }
+  .icon-btn.del:hover { color: var(--danger); background: rgba(255, 92, 122, .12); }
+  .icon-btn svg { width: 14px; height: 14px; pointer-events: none; }
+
+  .key-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0 12px; height: 46px; flex-shrink: 0;
   }
   .card.revealed .key-row { border-color: var(--border-hover); }
-  
-  .key-text{
-    flex:1;font-family:var(--mono);font-size:.7rem;
-    color:var(--muted);line-height:1.5;
-    word-break:break-all;white-space:pre-wrap;
-    max-height:60px;overflow-y:auto;
-    user-select:none;
-    transition: color .15s ease;
+  .key-text {
+    flex: 1; min-width: 0; font-family: var(--mono); font-size: .7rem; color: var(--muted); line-height: 1.45;
+    word-break: break-all; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .card.revealed .key-text {
-    color: var(--text);
-    -webkit-text-security: none;
-    user-select: text;
-  }
-  .card:not(.revealed) .key-text {
-    -webkit-text-security: disc;
-    text-security: disc;
-    color: var(--muted);
-  }
+  .key-text.mask { letter-spacing: .12em; -webkit-line-clamp: 1; }
+  .card.revealed .key-text { color: var(--text); user-select: text; }
+  .key-eye { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+  .card:hover .key-eye { color: var(--text); }
 
-  /* Painel de Gráfico */
-  .dashboard-panel {
-    margin-top: 24px;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-  }
-  .dashboard-panel h3 { font-size: .85rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .chart-container {
-    position: relative;
-    height: 200px;
-    width: 100%;
-  }
+  .empty { grid-column: 1/-1; grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; color: var(--muted); font-size: .8rem; border: 1px dashed var(--border); border-radius: var(--radius); }
+  .empty b { color: var(--text); font-weight: 600; font-size: .85rem; }
 
-  /* Painel de Configurações */
-  .settings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 16px;
-  }
+  /* ---------- Settings ---------- */
+  .stack { display: flex; flex-direction: column; gap: 16px; max-width: 720px; }
   .settings-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; display: flex; flex-direction: column; gap: 16px;
   }
-  .settings-card h3 { font-size: .85rem; font-weight: 600; }
-  .settings-card p { font-size: .7rem; color: var(--muted); line-height: 1.5; }
-  .settings-card code { font-family: var(--mono); background: var(--bg); padding: 2px 4px; border-radius: 3px; font-size: .65rem; color: var(--text); }
-  
+  .settings-card h3 { font-size: .9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .settings-card p { font-size: .75rem; color: var(--muted); line-height: 1.65; }
+  .settings-card strong { color: var(--text); font-weight: 600; }
+  code, .code { font-family: var(--mono); font-size: .7rem; background: var(--bg); border: 1px solid var(--border); padding: 1px 6px; border-radius: 5px; color: var(--text); }
+
+  .xl-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; height: 44px; font-size: .82rem; font-weight: 600;
+    background: var(--text); color: var(--bg); border: none; border-radius: 8px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .xl-btn:hover { opacity: .9; transform: translateY(-1px); }
+  .xl-btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .xl-btn.ghost:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+  .xl-btn svg { width: 16px; height: 16px; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .seg { display: inline-flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; width: fit-content; }
+  .seg button {
+    border: none; background: transparent; color: var(--muted); font-size: .72rem; font-weight: 500;
+    padding: 0 12px; height: 28px; border-radius: 6px; cursor: pointer; font-family: inherit; transition: all .12s;
+  }
+  .seg button.on { background: var(--surface-hover); color: var(--text); box-shadow: 0 0 0 1px var(--border-hover) inset; }
+  .user-input { display: none; }
+  .user-input.show { display: block; }
+  .user-input label { display: block; font-size: .7rem; color: var(--muted); margin-bottom: 6px; }
+  .user-input input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-size: .8rem; padding: 0 12px; height: 38px; border-radius: 8px; outline: none; font-family: var(--mono);
+  }
+  .user-input input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 3px var(--accent-soft); }
+
   .path-box {
-    background: var(--bg);
-    border: 1px dashed var(--border-hover);
-    padding: 12px;
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: .7rem;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    word-break: break-all;
+    display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0 14px; height: 40px; font-family: var(--mono); font-size: .74rem; overflow: hidden;
   }
-  
-  /* Barra de Ações Inferior */
+  .path-box svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
+  .path-box span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .path-hint { font-size: .68rem; color: var(--muted); margin-top: -8px; }
+
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 0; counter-reset: s; }
+  .steps li {
+    position: relative; padding: 0 0 18px 40px; counter-increment: s; font-size: .76rem; line-height: 1.6; color: var(--muted);
+  }
+  .steps li:last-child { padding-bottom: 0; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--border-hover); background: var(--bg); color: var(--text);
+    display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 600;
+  }
+  .steps li::after { content: ""; position: absolute; left: 12.5px; top: 30px; bottom: 4px; width: 1px; background: var(--border); }
+  .steps li:last-child::after { display: none; }
+  .steps li b { color: var(--text); font-weight: 600; display: block; font-size: .8rem; margin-bottom: 2px; }
+
+  .cmd {
+    position: relative; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 44px 12px 14px; font-family: var(--mono); font-size: .7rem; line-height: 1.6; color: var(--text);
+    white-space: pre-wrap; word-break: break-all;
+  }
+  .cmd .icon-btn { position: absolute; right: 8px; top: 8px; }
+  .cmd-label { font-size: .68rem; color: var(--muted); margin-bottom: -8px; }
+  .note { font-size: .7rem; color: var(--muted); display: flex; gap: 8px; line-height: 1.6; }
+  .note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+
+  /* ---------- Action bar ---------- */
   .action-bar {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(18, 18, 20, 0.9);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
-    padding: 6px;
-    border-radius: 6px;
-    display: flex;
-    gap: 4px;
-    z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: color-mix(in srgb, var(--surface) 85%, transparent); backdrop-filter: blur(14px);
+    border: 1px solid var(--border); padding: 6px; border-radius: 12px; display: flex; gap: 4px; z-index: 50;
+    box-shadow: 0 10px 34px rgba(0,0,0,.32);
   }
-  [data-theme="light"] .action-bar {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  }
-  .action-bar .btn {
-    border: none;
-    background: transparent;
-    padding: 6px 12px;
-    color: var(--muted);
-    transition: all .15s;
-  }
-  .action-bar .btn:hover {
-    background: var(--surface-hover);
-    color: var(--text);
-  }
+  .action-bar .btn { border: none; background: transparent; color: var(--muted); height: 36px; }
+  .action-bar .btn:hover { background: var(--surface-hover); color: var(--text); }
+  .action-bar .btn.primary { background: var(--text); color: var(--bg); }
+  .action-bar .btn.primary:hover { opacity: .88; background: var(--text); }
+  .action-bar .sep { width: 1px; background: var(--border); margin: 6px 2px; }
 
-  /* Modal */
-  .overlay {
-    display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); align-items:center; justify-content:center; z-index:100; padding: 20px;
-  }
-  .overlay.open { display: flex; }
-  .modal {
-    background:var(--surface); border:1px solid var(--border); padding:20px; border-radius:4px; width:100%; max-width:400px;
-  }
-  .modal h2 { font-size:.9rem; margin-bottom:12px; }
-  .field { margin-bottom:12px; }
-  .field label { display:block; font-size:.65rem; color:var(--muted); margin-bottom:4px; }
+  /* ---------- Modal ---------- */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .overlay.open { display: flex; animation: fade .15s ease; }
+  .modal { background: var(--surface); border: 1px solid var(--border); padding: 26px; border-radius: 14px; width: 100%; max-width: 440px; box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+  .modal h2 { font-size: .95rem; margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: .7rem; color: var(--muted); margin-bottom: 6px; }
   .field input, .field textarea {
-    width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text);
-    font-size:.75rem; padding:8px; border-radius:4px; outline:none; font-family:inherit;
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-size: .8rem; padding: 10px 12px; border-radius: 8px; outline: none; font-family: inherit;
   }
-  .field input:focus, .field textarea:focus { border-color:var(--border-hover); }
+  .field input:focus, .field textarea:focus { border-color: var(--border-hover); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field textarea { resize: vertical; min-height: 84px; font-family: var(--mono); }
 
-  /* Toast */
-  .toast{
-    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--surface); border:1px solid var(--border); color:var(--text);
-    font-size:.7rem; padding:8px 14px; border-radius:4px;
-    opacity:0; transition:all .2s; z-index:200; pointer-events:none;
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    font-size: .75rem; padding: 10px 16px; border-radius: 8px; opacity: 0; transition: all .2s; z-index: 200; pointer-events: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
   }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  .toast.ok{border-color:var(--border-hover); border-left:3px solid var(--accent);}
-  .toast.err{border-color:var(--border-hover); border-left:3px solid var(--danger);}
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.ok { border-left: 3px solid var(--accent); }
+  .toast.err { border-left: 3px solid var(--danger); }
 
-  @media (max-width:768px){
-    .sidebar{width:var(--sidebar-w)}
-    .sidebar:hover{width:var(--sidebar-w)}
-    .brand-text,.nav-label,.nav-item span,.nav-item .badge{display:none}
-    .nav-item{justify-content:center;padding:8px}
-    .topbar{padding:12px 16px}
-    .content{padding:16px; padding-bottom: 80px;}
-    .grid,.settings-grid{grid-template-columns:1fr}
-    .action-bar { width: 90%; justify-content: space-around; }
+  @media (max-width: 768px) {
+    .sidebar, .sidebar:hover { width: var(--sidebar-w); }
+    .brand-text, .nav-label, .nav-item span, .nav-item .badge { display: none; }
+    .content { padding: 16px; padding-bottom: 110px; }
+    .topbar { padding: 14px 16px; }
+    .toolbar { flex-wrap: wrap; }
+    .search { max-width: 100%; flex-basis: 100%; }
+    .count { margin-left: 0; }
+    .hero { display: none; }
+    .grid { grid-template-columns: 1fr; }
+    .btn-row { grid-template-columns: 1fr; }
+    .card-actions { opacity: 1; }
   }
 </style>
 </head>
 <body>
 
+<div class="hero" id="hero" aria-hidden="true"></div>
+
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter" stroke-linecap="butt">
-            <path d="M37.0 17.0 Q40.3 9.5 43 2 Q40.0 9.5 37.0 17.0Z"/>
-            <path d="M34.0 16.5 Q34.0 8.6 34 0.8 Q34.0 8.6 34.0 16.5Z"/>
-            <path d="M31.0 17.0 Q27.5 9.8 24 2.5 Q27.5 9.8 31.0 17.0Z"/>
-            <path d="M28.5 18.5 Q22.3 12.8 16 7 Q22.3 12.8 28.5 18.5Z"/>
-            <path d="M26.5 20.5 Q17.8 17.3 9 14 Q17.8 17.3 26.5 20.5Z"/>
-            <path d="M25 59 L6 64 L58 64 L41 59 L40 50 L29 46Z"/>
-            <path d="M38 15 C29 12 21 17 19.5 27 C18 38 19 50 14 62 L25 61 C27 51 27 43 29.5 36 C30.5 29 32.5 23 38 20Z"/>
-            <path d="M24.5 30 L21.5 52 M27.5 28 L25 54 M22 36 L18 56" fill="none" stroke-width="0.9"/>
-            <path d="M38 15 L43 19 L45 24 L44 27 L49.5 33.5 L45.5 36 L46.5 38 L45 39.5 L46 41 L44.5 43 L47.5 47.5 L44 51.5 L33 51 L29.5 41 L28.5 29 L31 19Z"/>
-          </g>
-          <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="butt" stroke-linejoin="miter">
-            <path d="M35.5 23 L44.6 26.4" stroke-width="2.85"/>
-            <path d="M38 29.4 L43.2 28.4"/>
-            <path d="M38.6 31.6 L42.4 30.8" stroke-width="0.8"/>
-            <path d="M35 33.6 L42.5 36.4" stroke-width="0.9"/>
-            <path d="M31 43 L36 48.5 L43 49.5" stroke-width="1"/>
-            <path d="M33.5 35.8 L41 39 M33.5 38.8 L40.2 42" stroke-width="1.8"/>
-            <path d="M45 39.9 L40.2 40.6 L39.3 39.6" stroke-width="1.2"/>
-            <path d="M45.5 35.6 Q43.4 35.2 43.9 33.4" stroke-width="0.9"/>
-            <path d="M30.2 33 Q26.6 35.5 30 41" stroke-width="1.1"/>
-            <path d="M33 52 L35 59" stroke-width="0.8"/>
-          </g>
-          <circle cx="38.2" cy="29.2" r="0.9" fill="currentColor"/>
-          <circle cx="28.6" cy="43.2" r="1.3" fill="none" stroke="currentColor" stroke-width="0.9"/>
-          <path d="M29.5 19.5 L43 21.8" stroke="currentColor" stroke-width="2.7" fill="none"/>
-          <path d="M30 22.3 L42.6 24.4" stroke="currentColor" stroke-width="0.8" fill="none" stroke-dasharray="1.2 1.2"/>
-        </svg>
-      </div>
+      <div class="brand-mark" id="brandMark"></div>
       <div class="brand-text">
         <h1>Codajás</h1>
+        <small>Cofre de chaves</small>
       </div>
     </div>
-    
+
     <nav class="nav" id="nav">
       <div class="nav-label">Gerenciamento</div>
       <button class="nav-item active" data-panel="keys">
@@ -426,7 +358,7 @@
         <span>API Keys</span>
         <span class="badge" id="navCount">0</span>
       </button>
-      
+
       <div class="nav-label" style="margin-top:auto">Sistema</div>
       <button class="nav-item" id="themeToggle">
         <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -454,88 +386,73 @@
         <div class="toolbar">
           <div class="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Buscar...">
+            <input type="text" id="searchInput" placeholder="Buscar provedor ou variável...">
           </div>
-          <div class="count"><span id="countNum">0</span> chaves</div>
+          <div class="count"><b id="countNum">0</b> chaves salvas</div>
         </div>
-        <div class="grid" id="grid">
-          <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Carregando chaves...</div>
-        </div>
-
-        <!-- Painel de Gráfico -->
-        <div class="dashboard-panel" id="dashboardPanel" style="display:none">
-          <h3>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            Consumo Estimado (Geral)
-          </h3>
-          <div class="chart-container">
-            <canvas id="usageChart"></canvas>
-          </div>
-        </div>
+        <div class="grid" id="grid"></div>
       </section>
 
       <!-- PANEL: SETTINGS -->
       <section class="panel" id="panel-settings">
-        <div class="settings-grid">
-          
-          <!-- Exportação FCC -->
-          <div class="settings-card" style="grid-column: 1/-1;">
-            <h3>Exportar para o Free Claude Code</h3>
-            <p>O Free Claude Code lê suas chaves de um arquivo <code>.env</code> na sua pasta de usuário. Siga os passos abaixo para aplicar as chaves deste painel no seu terminal.</p>
-            
-            <div style="margin-top: 8px;">
-              <label style="font-size:.65rem; color:var(--muted); display:block; margin-bottom:6px;">Caminho esperado do arquivo:</label>
-              <div class="path-box">
-                <span id="fccPathDisplay">C:\Users\SeuUsuario\.fcc\.env</span>
-              </div>
+        <div class="stack">
+
+          <div class="settings-card">
+            <h3>Exportar minhas chaves</h3>
+            <p>Gera o arquivo <strong>.env</strong> com todas as suas chaves, no mesmo formato usado pelo <strong>Free Claude Code</strong>. Pronto para ser colocado em <code>.fcc</code>.</p>
+            <button class="xl-btn" id="downloadEnvBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Baixar arquivo .env
+            </button>
+          </div>
+
+          <div class="settings-card">
+            <h3>Instalar no Windows (.fcc)</h3>
+            <p>Siga o passo a passo para gerar o instalador <strong>.bat</strong>. Ele coloca o seu <code>.env</code> na pasta <code>.fcc</code> do usuário.</p>
+
+            <div class="seg" id="userSeg">
+              <button data-mode="auto" class="on">Qualquer usuário (automático)</button>
+              <button data-mode="custom">Usuário específico</button>
+            </div>
+            <div class="user-input" id="userInput">
+              <label for="winUser">Nome do usuário do Windows</label>
+              <input type="text" id="winUser" value="rerison.silva" spellcheck="false" autocomplete="off">
             </div>
 
-            <div style="display:flex; gap:8px; flex-wrap: wrap; margin-top: 8px;">
-              <button class="btn primary" id="downloadEnvBtn" style="flex:1;">
+            <div class="path-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span id="pathPreview"></span>
+            </div>
+            <div class="path-hint" id="pathHint"></div>
+
+            <ol class="steps">
+              <li><b>Baixe o arquivo .env</b>Clique no botão abaixo. Se o navegador salvar como <code>env</code> (sem ponto), renomeie para <code>.env</code>.</li>
+              <li><b>Baixe o instalador .bat</b>Salve na <strong>mesma pasta</strong> do <code>.env</code> (por exemplo, em Downloads).</li>
+              <li><b>Execute o instalador</b>Dê duplo clique em <code>instalar-fcc.bat</code>. Ele cria a pasta <code>.fcc</code> se ela não existir, guarda o <code>.env</code> atual como <code>.env.bak</code> e copia o novo.</li>
+              <li><b>Reinicie o Free Claude Code</b>Abra o <code>/admin</code> e confirme que as chaves foram carregadas.</li>
+            </ol>
+
+            <div class="btn-row">
+              <button class="xl-btn ghost" id="stepEnvBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 1. Baixar .env
               </button>
-              <button class="btn primary" id="downloadBatBtn" style="flex:1;">
+              <button class="xl-btn" id="downloadBatBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-                2. Baixar Instalador (.bat)
+                2. Baixar instalar-fcc.bat
               </button>
             </div>
-            <p style="font-size:.65rem; color:var(--muted); margin-top:8px;">
-              <strong>Dica:</strong> Baixe o arquivo <code>.env</code> e o script <code>.bat</code> na mesma pasta (ex: Downloads) e clique duas vezes no <code>.bat</code>. Ele moverá a chave para a pasta correta automaticamente.
-            </p>
-          </div>
 
-          <!-- Integração via API -->
-          <div class="settings-card">
-            <h3>Envio via API Local</h3>
-            <p>Se o servidor do FCC estiver rodando na sua máquina, o painel tenta enviar as chaves via HTTP para a porta 8082.</p>
-            
-            <div class="field" style="margin-top:8px">
-              <label>URL do Admin FCC</label>
-              <input type="text" id="adminUrl" value="http://127.0.0.1:8082/admin">
+            <div class="cmd-label">Prefere o terminal? Rode no CMD, dentro da pasta onde está o .env:</div>
+            <div class="cmd"><span id="cmdText"></span>
+              <button class="icon-btn" id="copyCmdBtn" title="Copiar comando">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
             </div>
-            <div class="field">
-              <label>Endpoint (opcional)</label>
-              <input type="text" id="adminEndpoint" placeholder="/api/config/import">
-            </div>
-            
-            <div style="display:flex; gap:8px; margin-top: 4px;">
-              <button class="btn primary" id="sendAdminBtn" style="flex:1;">Enviar via API</button>
-              <button class="btn" id="previewEnvBtn">Ver Texto</button>
-            </div>
-            <div id="adminResult" style="font-size:.65rem; font-family:var(--mono); display:none; margin-top:8px;"></div>
-            <textarea id="envPreview" style="display:none; margin-top:8px; width:100%; min-height:100px; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:.7rem; padding:8px; border-radius:4px; resize:vertical; outline:none"></textarea>
-          </div>
 
-          <!-- Sobre -->
-          <div class="settings-card">
-            <h3>Sobre o Projeto</h3>
-            <p>O <strong>Free Claude Code</strong> permite usar modelos de linguagem no terminal sem custos de API, roteando requisições.</p>
-            <div style="margin-top: 10px;">
-              <a href="https://github.com/Alishahryar1/free-claude-code" target="_blank" class="btn" style="text-decoration:none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                Ver Repositório no GitHub
-              </a>
+            <div class="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span><strong>Privacidade:</strong> o .bat não contém nenhuma chave, ele só copia o arquivo .env que está ao lado dele. As chaves ficam salvas apenas no seu navegador (localStorage) e nada é enviado para servidores externos.</span>
             </div>
           </div>
 
@@ -545,41 +462,42 @@
   </div>
 </div>
 
-<!-- Barra Inferior Minimalista -->
+<!-- Action Bar -->
 <div class="action-bar">
   <button class="btn" id="importBtn" title="Importar .env">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-    Importar .env
+    Importar
   </button>
-  <button class="btn" id="exportQuickBtn" title="Exportar .env">
+  <button class="btn" id="exportQuickBtn" title="Baixar .env">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    Exportar .env
+    Baixar .env
   </button>
-  <button class="btn" id="addNewBtn" title="Adicionar">
+  <div class="sep"></div>
+  <button class="btn primary" id="addNewBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Adicionar
   </button>
 </div>
 
-<input type="file" id="fileInput" accept=".env" style="display:none">
+<input type="file" id="fileInput" accept=".env,.txt,text/plain" style="display:none">
 
 <!-- Modal de Adicionar -->
 <div id="addModal" class="overlay">
   <div class="modal">
     <h2>Adicionar Nova API</h2>
     <div class="field">
-      <label>Nome do Serviço</label>
-      <input type="text" id="newName" placeholder="Ex: Minha API">
+      <label>Provedor / Nome do Serviço</label>
+      <input type="text" id="newName" placeholder="Ex: OpenAI, Anthropic...">
     </div>
     <div class="field">
-      <label>Variável (.env)</label>
-      <input type="text" id="newEnv" placeholder="MINHA_API_KEY">
+      <label>Variável no .env</label>
+      <input type="text" id="newEnv" placeholder="Ex: OPENAI_API_KEY">
     </div>
     <div class="field">
-      <label>Chave / Valor</label>
+      <label>Chave (Key)</label>
       <textarea id="newKey" placeholder="sk-..."></textarea>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:24px;">
       <button class="btn" id="cancelAddBtn">Cancelar</button>
       <button class="btn primary" id="saveAddBtn">Salvar</button>
     </div>
@@ -588,375 +506,247 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<script>
+  /*BRAND_START*/
+  // Arte vetorial: traços extraídos da foto de referência + leque de penas longas desenhado em vetor.
+  const ART = {"full":[-14,-44,238,264],"head":[76.7,1.0,148.6,171.0],"outline":"M135.3 3.0Q126.2 7.7 124.8 9.0Q123.4 10.4 119.8 12.7Q116.1 15.0 114.8 17.6Q113.5 20.2 110.7 21.1Q107.9 22.0 106.0 24.5Q104.1 27.0 100.7 27.6Q97.4 28.2 95.7 29.4Q94.0 30.5 92.7 32.4Q91.3 34.3 92.3 36.5Q93.3 38.7 93.0 40.2Q92.6 41.7 89.1 45.5Q85.6 49.3 83.4 50.5Q81.2 51.8 79.9 53.4L78.7 55.0M112.3 71.3Q121.3 69.4 128.0 64.0Q134.7 58.6 140.7 58.0Q146.7 57.4 149.8 56.0Q153.0 54.5 157.8 54.5Q162.6 54.4 163.7 54.9Q164.8 55.4 164.8 56.1Q164.8 56.8 164.1 57.5Q163.4 58.2 151.7 64.8L140.0 71.3M111.7 133.7Q107.3 139.0 106.4 141.0Q105.5 143.0 105.9 146.5Q106.4 149.9 105.7 151.4Q105.0 152.9 105.8 155.0Q106.6 157.0 106.6 163.0Q106.6 168.9 109.6 175.3Q112.5 181.7 112.1 186.8Q111.8 192.0 112.0 193.7Q112.2 195.3 115.5 202.2Q118.8 209.0 119.2 211.0L119.7 213.0M128.0 213.0Q124.4 187.3 124.2 177.0L124.0 166.7M188.7 174.7Q194.7 170.2 198.2 168.9Q201.7 167.6 206.3 166.8Q211.0 166.0 212.7 164.3Q214.4 162.6 215.7 156.1Q217.1 149.6 216.3 145.7Q215.6 141.7 216.7 139.5Q217.8 137.3 217.7 135.5Q217.7 133.7 218.3 131.3Q218.8 129.0 217.4 123.4Q216.0 117.8 216.2 117.2Q216.5 116.6 218.2 115.8Q219.9 114.9 221.0 113.8Q222.0 112.8 222.7 111.5Q223.3 110.2 223.2 109.1Q223.0 108.0 216.6 96.1Q210.1 84.2 208.4 82.7Q206.7 81.1 206.8 79.6Q206.8 78.2 208.6 76.8Q210.5 75.4 210.6 74.3Q210.8 73.3 209.2 69.3Q207.7 65.3 205.8 62.9Q204.0 60.5 203.2 58.1Q202.5 55.7 201.2 53.7Q199.8 51.7 196.4 47.9Q193.0 44.1 188.4 40.2Q183.8 36.3 182.1 33.8Q180.4 31.3 177.7 28.3Q175.0 25.4 165.8 17.4Q156.7 9.4 155.5 8.7Q154.3 8.0 152.0 7.6Q149.8 7.1 147.8 5.9Q145.9 4.7 140.8 3.8L135.7 3.0","major":"M156.0 71.7Q164.7 67.0 170.3 64.7Q176.0 62.3 183.2 60.5Q190.3 58.7 191.8 58.7Q193.3 58.7 195.8 59.5Q198.3 60.3 201.8 62.5L205.3 64.7M97.0 42.3Q119.7 50.0 121.3 51.2Q123.0 52.3 123.5 53.3L124.0 54.3M132.3 20.7Q133.0 22.0 141.5 26.3Q150.0 30.7 151.3 31.0Q152.7 31.3 153.7 32.7Q154.7 34.0 154.7 34.8L154.7 35.7M114.7 68.3Q118.7 68.7 122.3 64.8Q126.0 61.0 132.5 55.7Q139.0 50.3 143.0 48.0Q147.0 45.7 152.8 43.7L158.7 41.7M172.7 39.3Q162.3 43.3 158.2 44.3Q154.0 45.3 144.2 51.2L134.3 57.0M121.0 93.7Q122.0 89.0 123.8 85.7Q125.7 82.3 126.3 81.7Q127.0 81.0 128.5 80.7Q130.0 80.3 135.2 76.8L140.3 73.3M123.0 140.3Q121.7 136.0 120.2 134.7Q118.7 133.3 118.2 131.5Q117.7 129.7 117.5 123.0L117.3 116.3M154.3 65.0Q166.3 59.0 166.8 58.3Q167.3 57.7 169.8 56.7Q172.3 55.7 176.2 54.7Q180.0 53.7 184.3 53.2L188.7 52.7M108.3 31.3Q118.7 37.0 124.8 39.5Q131.0 42.0 132.7 43.8Q134.3 45.7 135.7 46.3L137.0 47.0M114.3 134.3Q114.0 142.7 114.3 144.3Q114.7 146.0 114.8 153.8L115.0 161.7M128.3 85.0Q147.7 71.7 157.0 66.8Q166.3 62.0 170.2 60.5Q174.0 59.0 181.3 57.3Q188.7 55.7 190.5 55.7Q192.3 55.7 196.3 57.0L200.3 58.3M160.3 32.3Q159.7 30.7 155.5 27.5Q151.3 24.3 148.2 22.7Q145.0 21.0 143.3 19.3Q141.7 17.7 138.8 17.2L136.0 16.7M140.3 76.0Q154.0 67.3 161.2 63.7Q168.3 60.0 169.5 59.8Q170.7 59.7 173.7 58.3Q176.7 57.0 182.2 56.0Q187.7 55.0 190.2 55.0Q192.7 55.0 194.5 55.5L196.3 56.0M205.0 61.3Q192.7 56.7 189.7 56.8Q186.7 57.0 182.8 57.8Q179.0 58.7 172.3 61.2Q165.7 63.7 162.8 65.3Q160.0 67.0 157.7 67.8Q155.3 68.7 148.3 73.0L141.3 77.3M135.7 57.7Q147.3 50.0 152.8 47.3Q158.3 44.7 160.7 44.3Q163.0 44.0 167.3 42.5Q171.7 41.0 177.2 40.8Q182.7 40.7 186.0 41.0L189.3 41.3M202.3 57.0Q198.3 54.3 194.5 53.0Q190.7 51.7 186.0 52.2Q181.3 52.7 174.3 54.7Q167.3 56.7 158.0 61.3Q148.7 66.0 137.8 72.8Q127.0 79.7 125.5 81.3Q124.0 83.0 121.2 88.7L118.3 94.3M126.7 81.3Q127.3 82.0 128.5 82.0Q129.7 82.0 138.8 75.3Q148.0 68.7 157.7 63.7Q167.3 58.7 173.0 56.8Q178.7 55.0 184.0 54.2Q189.3 53.3 191.0 53.5Q192.7 53.7 194.7 54.5L196.7 55.3M146.7 76.0Q156.3 70.0 165.3 66.0Q174.3 62.0 179.5 60.5Q184.7 59.0 187.5 58.5Q190.3 58.0 192.2 58.2L194.0 58.3","minor":"M190.7 81.7Q188.3 81.7 187.3 82.7L186.3 83.7M190.7 81.7L190.7 84.7M176.0 89.7L172.7 89.7M190.7 146.3L198.3 149.3M196.7 76.3Q200.3 77.3 200.8 77.8L201.3 78.3M141.3 93.0Q139.0 96.0 136.5 97.5L134.0 99.0M200.7 101.3Q200.7 102.7 199.2 105.5Q197.7 108.3 197.2 110.8L196.7 113.3M153.3 40.0Q151.7 41.3 148.5 41.8L145.3 42.3M208.7 149.0L211.3 150.7M156.0 71.7Q148.0 75.7 146.5 77.2L145.0 78.7M141.0 88.3Q138.0 87.3 137.3 86.2L136.7 85.0M128.3 25.7L131.7 27.3M184.0 130.0Q185.7 126.7 185.3 124.8Q185.0 123.0 185.3 122.2L185.7 121.3M207.3 132.0L209.7 131.7M135.7 91.0L132.3 95.7M96.3 42.3Q94.0 43.3 90.5 47.5Q87.0 51.7 85.3 52.0L83.7 52.3M216.3 101.0Q217.0 108.0 217.5 109.0L218.0 110.0M198.3 149.7L197.0 154.0M181.3 36.0L179.3 34.7M183.3 79.0L173.0 86.7M144.0 14.0L145.7 11.0M152.0 15.3Q150.7 15.3 150.0 14.7Q149.3 14.0 149.3 13.5L149.3 13.0M155.0 36.0L157.3 38.7M177.3 32.0L177.0 30.3M145.0 92.3Q146.7 92.0 147.3 91.3Q148.0 90.7 149.2 88.5Q150.3 86.3 150.3 85.5L150.3 84.7M196.3 76.7L196.3 83.3M167.0 88.7Q167.3 86.3 168.0 85.7L168.7 85.0M129.3 130.3Q130.7 131.3 131.3 133.0Q132.0 134.7 131.5 138.5L131.0 142.3M177.7 32.3L179.0 34.3M154.3 107.0Q155.7 106.7 156.7 105.3Q157.7 104.0 157.2 101.8L156.7 99.7M142.0 104.3Q142.3 106.7 142.8 107.2Q143.3 107.7 144.0 107.7Q144.7 107.7 146.2 105.5Q147.7 103.3 148.3 103.8Q149.0 104.3 149.3 106.5L149.7 108.7M204.0 154.3L202.0 155.7M167.3 182.0L170.0 184.7M92.7 34.7L94.7 33.3M159.0 46.3Q155.0 51.3 153.8 52.2L152.7 53.0M145.0 42.7Q144.0 44.0 142.8 44.3L141.7 44.7M188.0 74.3L185.3 74.7M186.3 154.3L186.3 151.7M171.0 48.0L175.3 47.0M191.7 79.3L191.3 81.0M116.7 176.3Q115.7 163.3 115.3 162.7L115.0 162.0M177.7 134.7Q176.7 131.7 177.2 130.0L177.7 128.3M124.0 55.0Q122.0 56.7 121.0 56.7Q120.0 56.7 119.5 56.0L119.0 55.3M128.3 55.0Q127.0 54.0 125.7 54.3L124.3 54.7M204.7 154.3Q207.7 156.7 209.0 156.8L210.3 157.0M117.0 18.3Q117.0 17.0 117.5 16.5L118.0 16.0M169.0 107.0Q170.3 109.3 171.3 110.0L172.3 110.7M111.0 163.0L114.7 162.0M191.3 139.3L193.7 135.0M196.7 113.3Q195.3 114.7 193.5 119.0Q191.7 123.3 190.8 127.7L190.0 132.0M196.7 113.3L202.0 114.3M159.0 41.3Q168.3 38.3 170.2 38.3Q172.0 38.3 172.3 38.7L172.7 39.0M147.7 173.0L146.7 174.7M188.7 74.3L191.7 73.7M204.0 85.0Q214.7 97.3 215.3 99.0L216.0 100.7M129.7 144.3Q128.0 145.3 126.5 145.2L125.0 145.0M173.7 30.0Q170.3 27.3 170.5 26.2L170.7 25.0M120.0 21.3L117.3 19.3M201.7 78.3Q202.3 77.3 202.5 72.7L202.7 68.0M139.7 5.7Q142.3 6.0 144.2 8.3L146.0 10.7M127.3 131.3L127.3 134.0M179.3 185.3L177.0 186.7M185.7 173.7Q185.7 175.3 184.8 176.7L184.0 178.0M169.7 188.0L170.0 185.0M135.7 28.0Q134.0 27.0 133.2 27.2L132.3 27.3M140.3 84.3L141.7 86.7M199.3 166.3Q196.7 168.0 195.0 168.2Q193.3 168.3 192.3 169.0L191.3 169.7M108.0 31.0L105.3 30.7M175.3 32.3L177.0 32.3M192.3 62.3L194.3 61.7M192.3 62.3Q187.7 63.3 187.8 65.7Q188.0 68.0 189.8 69.8L191.7 71.7M192.3 62.3Q192.7 64.0 193.7 64.7Q194.7 65.3 195.0 66.0Q195.3 66.7 195.0 68.8L194.7 71.0M112.0 69.7L114.7 68.3M160.3 32.7L157.3 34.7M198.0 72.0L194.7 71.3M144.0 39.7Q143.0 37.3 138.0 33.3Q133.0 29.3 132.5 28.5L132.0 27.7M196.0 83.7L191.7 81.3M141.7 92.7L143.0 90.0M100.3 29.3Q98.7 29.3 97.7 30.0Q96.7 30.7 95.7 32.0L94.7 33.3M202.3 133.0L202.3 127.7M173.0 39.3Q181.3 39.0 184.0 39.8L186.7 40.7M215.3 130.7Q214.3 129.3 213.5 129.2L212.7 129.0M215.3 130.7L217.0 130.0M219.0 113.7Q217.3 114.3 215.5 114.2Q213.7 114.0 212.8 114.5L212.0 115.0M198.7 149.3Q200.0 149.0 201.3 147.5Q202.7 146.0 203.3 146.0Q204.0 146.0 204.7 146.8L205.3 147.7M214.7 132.3L210.0 131.7M108.3 23.7Q114.3 22.7 115.0 22.2Q115.7 21.7 116.2 20.5L116.7 19.3M218.3 110.3L220.3 111.0M127.3 8.7L127.3 11.0M140.7 82.0L140.3 84.0M127.3 134.3Q128.0 136.7 127.3 137.8L126.7 139.0M171.7 189.3L169.7 188.3M124.0 145.3Q124.3 150.7 124.0 151.5Q123.7 152.3 123.7 154.3Q123.7 156.3 124.0 158.0Q124.3 159.7 124.8 160.0L125.3 160.3M177.0 175.3Q172.0 177.3 169.7 179.5L167.3 181.7M182.3 45.7Q188.0 45.3 189.2 46.3L190.3 47.3M143.7 14.0L140.7 13.3M129.7 16.7L131.3 14.3M192.3 71.7L194.3 71.3M121.7 142.3L124.0 145.0M141.3 88.3L143.0 90.0M178.3 193.7Q179.0 195.0 180.0 195.0L181.0 195.0M204.3 150.7L205.3 148.0M204.3 150.7L204.3 154.0M182.7 149.0L183.3 146.7M114.7 68.3Q124.0 58.3 125.8 57.5Q127.7 56.7 128.0 56.0L128.3 55.3M144.3 81.3L142.0 80.7M165.3 30.7Q164.3 28.3 163.0 27.2L161.7 26.0M189.7 132.3Q188.7 133.0 188.7 134.3Q188.7 135.7 189.3 137.2Q190.0 138.7 190.5 139.0L191.0 139.3M141.3 45.0Q140.7 46.0 139.0 46.5L137.3 47.0M184.3 86.7L187.0 89.7M132.3 20.0Q134.3 19.3 135.0 18.2L135.7 17.0M127.0 11.3Q126.0 12.3 124.3 12.7L122.7 13.0M170.7 48.0Q169.0 47.0 164.2 46.7L159.3 46.3M152.0 98.0L154.0 106.7M152.0 37.0Q151.0 37.0 149.2 35.5L147.3 34.0M172.0 189.7L174.7 191.3M149.7 12.7Q151.3 13.0 151.8 14.0L152.3 15.0M192.7 105.3L191.3 100.3M172.7 111.0Q172.0 117.3 171.3 118.7Q170.7 120.0 170.7 121.0Q170.7 122.0 169.3 126.0L168.0 130.0M191.0 140.7L190.7 146.0M144.0 14.3Q153.0 20.7 156.5 22.2Q160.0 23.7 160.7 24.7L161.3 25.7M179.3 96.7L185.3 93.7M137.0 47.3L128.7 55.0M144.3 92.7L142.7 94.7M188.3 49.3L190.3 48.0M204.7 133.3L202.7 133.3M173.0 78.7Q170.0 81.7 169.5 83.2L169.0 84.7M213.3 139.7L204.7 139.7M213.3 139.7Q214.0 142.3 213.5 142.8Q213.0 143.3 211.7 143.7Q210.3 144.0 208.0 145.8L205.7 147.7M110.7 163.0Q110.0 160.3 110.8 159.7L111.7 159.0M175.0 34.3L175.0 32.7M141.0 42.7Q138.0 38.7 134.0 35.5L130.0 32.3M203.7 85.0L196.7 84.3M127.7 11.3L131.7 14.0M151.0 78.7Q151.7 79.3 151.5 80.3L151.3 81.3M152.7 37.0L154.3 36.0M150.3 177.3L146.7 175.3M178.0 134.7Q182.3 130.7 183.0 130.5L183.7 130.3M165.7 31.0Q168.0 31.7 170.7 31.5L173.3 31.3M161.3 183.0L164.7 182.3M208.0 165.0L200.0 166.0M150.7 177.0Q151.3 175.0 150.5 174.2L149.7 173.3M213.3 161.0Q214.0 157.0 213.8 155.0Q213.7 153.0 213.3 152.7L213.0 152.3M140.0 84.3L138.0 84.3M141.7 42.7L144.0 40.0M174.0 30.0Q175.0 29.0 175.7 29.2L176.3 29.3M191.3 100.0L194.7 95.7M190.7 111.3L192.7 105.7M136.0 90.3L132.7 86.7M141.3 92.7Q140.3 91.7 138.3 91.2L136.3 90.7M172.7 110.3Q173.7 107.3 173.2 105.8L172.7 104.3M152.3 37.3L153.3 39.7M108.3 31.0Q109.3 29.7 110.2 29.3L111.0 29.0M177.7 135.0L176.0 138.3M146.3 175.0L143.3 171.7M192.0 73.7L196.0 76.3M160.7 32.7L162.3 33.7M195.0 144.0Q193.0 141.3 192.2 141.0L191.3 140.7M193.3 134.7L190.0 132.3M162.0 16.3Q154.3 10.3 152.8 9.7L151.3 9.0M189.0 52.3L188.3 49.7M182.0 172.7Q179.3 174.7 179.2 176.3Q179.0 178.0 178.2 179.0Q177.3 180.0 176.8 181.7L176.3 183.3M153.3 76.0L151.3 78.0M163.0 33.7L165.0 31.3M179.3 91.3L182.7 90.7M118.7 105.7L120.7 94.0M127.0 130.7Q126.0 129.7 126.2 127.0L126.3 124.3M193.0 47.7L190.7 47.7M194.0 134.7L202.3 133.3M206.7 121.3Q208.7 124.0 209.5 126.0Q210.3 128.0 210.2 129.7L210.0 131.3M182.7 172.7L185.3 173.3M172.0 189.3Q173.0 186.7 173.5 186.3L174.0 186.0M200.7 58.0Q199.7 56.0 197.8 55.0Q196.0 54.0 192.7 53.3L189.3 52.7M162.7 34.0L163.3 36.7M177.0 93.3L179.0 91.7M183.3 146.3Q182.7 144.7 182.7 141.8Q182.7 139.0 183.5 135.5Q184.3 132.0 184.2 131.3L184.0 130.7M140.7 169.7Q140.3 168.3 136.8 165.0L133.3 161.7M188.0 49.3Q184.7 49.3 182.5 48.5Q180.3 47.7 178.0 47.3L175.7 47.0M175.7 46.7L179.3 42.3M178.7 34.7L175.3 34.7M110.7 163.3Q109.0 165.0 108.7 166.7L108.3 168.3M150.7 78.7L146.0 82.7M205.0 133.3L207.0 132.0M154.0 85.3Q153.0 88.3 149.0 93.0Q145.0 97.7 144.7 98.8L144.3 100.0M211.3 115.3L210.3 117.7M132.0 14.3L135.7 16.3M188.3 74.7Q188.0 77.0 187.3 77.7Q186.7 78.3 185.2 78.7L183.7 79.0M210.7 113.3Q207.3 114.3 206.7 115.2Q206.0 116.0 204.7 115.8Q203.3 115.7 202.8 115.2L202.3 114.7M191.0 100.0L188.0 99.3M189.0 171.7L186.0 173.3M170.7 48.3L167.3 52.7M145.7 83.0Q145.0 85.3 143.5 86.2L142.0 87.0M125.0 144.7Q126.7 141.0 126.7 140.0L126.7 139.0M153.7 39.7Q156.0 39.7 156.7 39.2L157.3 38.7M185.3 74.7L183.3 78.7M172.7 89.3L173.0 86.7M167.3 36.0L174.7 34.7M96.7 42.0Q96.3 39.0 97.0 37.8Q97.7 36.7 97.5 35.8L97.3 35.0M194.7 95.7Q195.3 92.7 196.2 91.5Q197.0 90.3 196.7 87.5L196.3 84.7M194.7 95.7Q196.0 97.0 196.0 97.5L196.0 98.0M144.3 40.0L145.0 42.3M206.3 100.0Q208.3 100.7 210.7 103.3Q213.0 106.0 212.8 108.0Q212.7 110.0 211.8 111.5L211.0 113.0M165.3 182.3L167.0 182.0M148.3 85.0L143.0 90.0M120.3 21.7Q124.7 24.7 126.3 25.2L128.0 25.7M161.7 186.0L153.3 180.0M144.7 78.7Q142.7 79.3 142.3 80.0L142.0 80.7M211.3 136.0Q205.7 136.0 205.3 134.8L205.0 133.7M133.3 116.7Q134.3 118.7 134.3 120.2Q134.3 121.7 133.8 122.7Q133.3 123.7 131.5 125.2Q129.7 126.7 129.5 128.3L129.3 130.0M210.7 157.3Q210.3 160.3 209.7 161.3L209.0 162.3M136.3 84.7Q133.3 85.3 133.0 85.8L132.7 86.3M165.0 182.7Q164.7 185.0 165.5 185.3L166.3 185.7M152.7 15.3Q155.3 17.0 157.5 17.5Q159.7 18.0 162.8 21.2L166.0 24.3M176.7 187.0L175.0 191.3M176.7 93.3L174.0 93.7M203.7 84.7Q201.7 80.7 201.7 79.7L201.7 78.7M149.0 12.7Q147.3 11.0 146.8 11.0L146.3 11.0M183.3 43.0L180.0 42.3M132.0 20.3L121.3 16.0M212.7 152.3L210.7 156.7M179.7 191.3Q181.3 193.3 181.3 194.0L181.3 194.7M145.0 79.0L144.7 81.0M190.7 85.0L194.0 86.3M186.3 83.7Q184.7 84.7 184.5 85.3L184.3 86.0M186.3 83.7Q187.7 84.7 189.0 84.8L190.3 85.0M124.0 96.3L121.3 94.0M178.0 193.3L175.3 192.3M132.3 86.7L130.7 87.3M140.3 81.7Q138.7 82.0 138.2 83.0L137.7 84.0M169.3 85.0L173.0 86.7M190.3 146.3Q189.0 147.0 187.7 149.2L186.3 151.3M163.0 37.0L157.3 38.7M150.7 177.7L152.0 179.0M170.3 184.7L172.3 183.0M154.0 107.0Q152.7 108.7 151.3 108.8L150.0 109.0M145.7 32.3L147.0 33.7M205.0 99.0L201.0 101.0M204.7 102.3Q205.3 108.0 203.8 111.2L202.3 114.3M179.7 88.0Q178.7 90.0 178.8 90.5L179.0 91.0M126.7 139.0Q125.7 137.7 125.7 136.8Q125.7 136.0 126.3 135.2L127.0 134.3M117.7 91.7L123.3 80.3M194.7 64.0Q196.3 66.3 196.0 67.7L195.7 69.0M143.0 63.0L140.3 67.3M181.3 61.7L176.0 63.7M183.0 46.3Q187.3 46.7 188.2 46.2L189.0 45.7M171.7 47.0Q164.3 45.7 161.8 45.7Q159.3 45.7 158.7 46.3L158.0 47.0M107.7 77.7Q109.3 76.0 109.3 75.3L109.3 74.7M144.7 84.0L143.7 85.7M112.7 89.7L113.3 84.3M142.3 79.0L146.3 76.3M113.3 97.3L112.0 99.0M170.0 49.0Q165.0 54.3 162.0 54.7L159.0 55.0M118.3 76.0Q118.0 77.7 118.5 78.2L119.0 78.7M185.0 77.7Q187.0 75.7 188.0 75.7L189.0 75.7M133.3 60.3L127.7 68.7M132.3 71.3L136.7 70.0M127.7 61.3L119.0 70.0M192.0 48.3Q188.3 50.3 186.7 50.3Q185.0 50.3 182.3 49.3Q179.7 48.3 177.8 48.2L176.0 48.0M130.0 60.0L128.3 61.7M116.3 102.0L116.7 98.3M116.3 102.0L114.0 105.7M111.0 93.3L112.3 92.0M145.0 60.7L143.3 62.7M184.7 65.0Q184.7 67.3 183.5 68.3L182.3 69.3M134.7 90.0Q133.3 89.3 134.0 88.7L134.7 88.0M128.0 69.0Q129.3 69.0 131.0 66.3Q132.7 63.7 134.0 62.3Q135.3 61.0 139.7 60.3L144.0 59.7M132.3 85.3Q130.3 87.0 129.5 86.8Q128.7 86.7 134.8 82.2L141.0 77.7M112.7 104.7Q111.7 103.3 111.8 101.2L112.0 99.0M137.7 71.0L135.7 71.3M117.3 75.3L118.3 72.3M137.3 54.3Q146.3 48.7 149.5 47.2L152.7 45.7M147.7 77.0Q148.3 76.3 149.0 76.5L149.7 76.7M150.3 57.7Q146.0 61.7 143.5 65.0L141.0 68.3M194.0 61.3Q196.3 62.0 196.7 62.8L197.0 63.7M180.7 42.7Q179.3 42.0 177.0 44.2Q174.7 46.3 173.5 46.7L172.3 47.0M112.0 94.3L110.3 97.0M194.3 69.0Q191.3 69.3 190.3 68.5Q189.3 67.7 189.3 65.8Q189.3 64.0 188.7 62.7L188.0 61.3M168.3 39.3L153.7 44.0M199.7 71.0Q197.3 71.0 196.5 70.2L195.7 69.3M104.0 87.7Q102.0 86.3 103.8 83.2L105.7 80.0M104.0 87.7Q108.7 90.3 110.2 90.5Q111.7 90.7 112.0 91.2L112.3 91.7M158.7 48.0Q160.0 47.0 164.8 47.5Q169.7 48.0 169.8 48.3L170.0 48.7M158.7 48.0L153.7 54.3M130.7 71.7Q127.0 73.3 125.8 74.5L124.7 75.7M107.0 85.0Q108.7 83.7 108.5 83.2Q108.3 82.7 106.7 83.2L105.0 83.7M147.3 85.0L145.7 83.3M147.3 85.0L148.7 83.3M147.3 85.0L146.0 87.0M177.0 46.3L180.7 43.0M152.7 87.3Q156.0 77.0 156.5 76.8Q157.0 76.7 159.0 74.3L161.0 72.0M143.0 62.7Q141.7 62.0 141.2 62.5L140.7 63.0M173.0 37.3L169.3 37.7M118.7 75.7Q119.3 74.3 119.0 73.3L118.7 72.3M127.7 69.0L126.3 70.7M136.3 58.7Q140.0 58.7 141.7 58.2Q143.3 57.7 144.8 58.0L146.3 58.3M137.7 87.7Q139.7 88.7 140.5 87.7L141.3 86.7M115.3 75.7L114.7 83.7M137.0 54.7L135.3 55.7M118.7 70.3L115.3 70.3M146.0 87.3Q146.7 88.0 147.7 87.2L148.7 86.3M157.7 41.3L167.0 38.0M157.7 41.3L153.3 43.3M116.7 79.0L117.3 75.7M173.3 85.0Q181.0 77.0 182.3 76.8L183.7 76.7M110.3 84.7L110.0 86.7M115.0 70.0L126.0 58.7M122.0 91.3Q121.7 92.3 123.5 94.5L125.3 96.7M144.0 80.7L145.7 78.3M186.7 44.0L183.3 42.7M127.7 84.7Q129.0 84.3 134.5 80.3L140.0 76.3M113.7 96.7Q113.3 95.3 113.7 94.7L114.0 94.0M181.3 42.7Q182.0 42.0 182.7 42.3L183.3 42.7M106.7 85.3L105.3 86.3M111.3 75.3Q113.3 73.7 114.2 73.7Q115.0 73.7 115.3 74.0Q115.7 74.3 115.5 74.8L115.3 75.3M194.7 68.7Q194.3 66.3 194.7 66.0L195.0 65.7M133.3 52.7L130.3 55.3M153.0 43.3L151.0 44.0M113.3 83.7L113.3 81.7M170.3 49.0L172.0 47.3M151.7 57.3L158.3 56.3M111.7 81.0Q110.7 81.7 110.5 82.8L110.3 84.0M141.3 86.7L143.3 85.7M112.0 81.3L111.3 84.3M140.0 67.7Q139.0 68.7 138.2 68.7L137.3 68.7M169.0 40.0L170.7 40.0M169.0 40.0L160.7 43.0M112.7 105.3Q113.0 106.3 113.3 106.2L113.7 106.0M144.7 81.3Q146.3 80.3 146.8 78.8L147.3 77.3M192.3 48.3L194.0 49.0M150.3 83.7L148.7 83.3M197.7 60.7Q193.0 59.3 190.7 59.7L188.3 60.0M186.0 61.0L187.7 60.0M111.7 75.7L115.0 75.3M113.0 104.7Q113.7 103.7 113.7 101.3L113.7 99.0M202.0 57.7L200.3 57.7M141.7 88.7L143.7 87.3M192.7 76.0L189.3 76.0M205.3 61.7Q207.3 63.7 207.5 64.3L207.7 65.0M136.7 68.7L132.0 70.0M115.0 70.3Q110.7 73.0 110.2 73.7L109.7 74.3M141.0 68.3Q139.7 70.0 138.8 70.3L138.0 70.7M137.7 64.7Q134.3 67.7 133.7 67.8L133.0 68.0M117.3 69.0L126.7 59.7M116.7 109.7L115.7 107.7M186.7 44.3Q186.0 45.0 184.5 45.2L183.0 45.3M127.0 71.3L130.0 70.7M122.7 91.3L126.3 94.7M181.3 43.0Q182.7 43.3 183.0 43.0L183.3 42.7M154.0 55.3L158.3 55.0M168.7 39.3Q171.3 38.7 175.5 38.8L179.7 39.0M145.7 83.0Q148.0 80.7 148.8 79.0L149.7 77.3M158.3 52.3Q162.7 49.3 163.3 49.2Q164.0 49.0 164.7 49.5Q165.3 50.0 162.5 51.5Q159.7 53.0 159.0 52.8L158.3 52.7M145.3 60.3L146.3 58.3M120.3 71.0L123.0 74.3M137.3 63.0Q139.0 62.0 139.7 62.3L140.3 62.7M153.0 61.0Q154.7 61.0 155.3 60.3Q156.0 59.7 155.8 58.8L155.7 58.0M151.3 44.7Q141.3 50.0 139.0 51.8L136.7 53.7M205.3 61.0L204.7 59.0M122.7 77.0L123.3 79.0M117.3 105.0Q118.3 101.3 118.3 98.2L118.3 95.0M182.0 47.3L177.3 46.7M182.0 47.3Q185.7 48.7 187.0 48.7Q188.3 48.7 190.0 47.8Q191.7 47.0 191.8 47.5L192.0 48.0M120.3 83.0Q121.7 80.3 122.2 80.2L122.7 80.0M104.0 90.0L105.7 92.0M114.7 84.3L114.3 86.7M182.3 75.0Q184.0 73.3 185.7 73.3Q187.3 73.3 189.2 72.0L191.0 70.7M181.3 69.7Q179.3 71.3 179.0 73.3Q178.7 75.3 174.7 79.5Q170.7 83.7 170.7 84.2L170.7 84.7M140.3 63.0L138.0 64.3M187.0 44.0L189.0 45.0M130.0 95.3L126.3 94.7M190.7 61.7L193.7 61.3M190.7 61.7Q190.7 62.7 191.2 63.0L191.7 63.3M116.0 90.7Q119.3 83.7 119.5 82.3Q119.7 81.0 121.0 79.2L122.3 77.3M110.3 98.3Q109.7 99.0 109.7 100.3L109.7 101.7M114.0 96.7L115.7 95.3M182.3 69.7L181.7 72.7M204.7 63.7Q199.0 60.0 198.5 60.2L198.0 60.3M151.0 55.0L157.7 47.3M116.7 97.7L116.0 95.3M115.7 92.3L114.3 93.7M107.0 80.0Q108.7 80.3 110.5 79.7Q112.3 79.0 112.0 78.3Q111.7 77.7 110.3 78.2Q109.0 78.7 108.3 78.3L107.7 78.0M128.3 61.7L126.0 64.3M172.0 65.3Q172.7 66.0 172.7 67.7Q172.7 69.3 173.2 69.7Q173.7 70.0 175.8 67.5Q178.0 65.0 179.8 63.8L181.7 62.7M140.7 85.3L136.3 87.0M198.0 60.7Q202.7 64.0 203.5 64.0L204.3 64.0M110.0 87.3L109.7 89.0M131.7 60.0Q127.7 65.0 124.0 67.8L120.3 70.7M125.3 79.0L125.3 77.0M111.3 84.7L111.0 89.0M190.0 41.7Q196.3 47.0 199.8 51.5L203.3 56.0M125.7 96.7L126.3 94.7M137.0 63.3L132.7 67.3M107.0 85.7Q106.0 87.3 105.7 87.0L105.3 86.7M194.3 48.7Q194.3 47.7 193.7 47.2L193.0 46.7M161.0 71.0Q160.0 71.0 157.0 73.8Q154.0 76.7 152.7 80.5Q151.3 84.3 151.2 85.8L151.0 87.3M119.3 78.7Q121.3 76.3 121.7 76.5L122.0 76.7M106.7 76.7L109.0 74.3M114.3 98.7Q114.7 101.0 115.0 101.2L115.3 101.3M146.3 58.3L149.7 56.7M144.7 83.7L144.0 82.0M142.7 48.0Q138.0 50.3 135.8 52.3L133.7 54.3M119.0 106.0L121.0 105.3M116.3 98.0Q115.7 98.7 115.7 99.8L115.7 101.0M175.3 48.0Q171.0 50.3 168.5 53.0Q166.0 55.7 165.2 56.0Q164.3 56.3 161.7 56.3L159.0 56.3M113.0 108.0L115.3 107.7M161.7 71.0Q163.0 71.0 162.8 71.5Q162.7 72.0 162.2 72.0L161.7 72.0M105.7 92.0Q107.0 94.0 107.5 96.2L108.0 98.3M141.0 85.3Q142.0 84.3 142.2 82.0L142.3 79.7M136.0 59.0L133.7 60.0M105.0 79.0L103.0 81.0M123.3 74.3L126.0 71.7M193.0 63.3Q193.0 65.3 192.3 65.3L191.7 65.3M119.0 79.0L113.7 92.7M134.0 84.3L142.0 79.3M186.0 61.3L182.0 62.7","fmain":"M119 66Q116.7 67.6 115.6 68.4Q114.4 69.2 113.3 70Q112.2 70.8 111 71.6Q109.9 72.4 108.8 73.2Q107.6 74 106.5 74.8Q105.4 75.7 104.2 76.5Q103.1 77.3 102 78.1Q100.8 79 99.7 79.8Q98.6 80.6 97.5 81.5Q96.4 82.3 95.2 83.1Q94.1 84 93 84.8Q91.9 85.7 90.8 86.5Q89.7 87.4 88.6 88.2Q87.5 89.1 86.4 89.9Q85.3 90.8 84.2 91.7Q83.1 92.5 82 93.4Q80.9 94.3 79.8 95.1Q78.7 96 77.6 96.9Q76.5 97.8 75.4 98.6Q74.4 99.5 73.3 100.4Q72.2 101.3 71.2 102.2Q70.1 103.1 69 103.9Q68 104.8 66.9 105.7Q65.9 106.6 64.8 107.5Q63.8 108.4 62.7 109.3Q61.7 110.2 60.7 111.1Q59.6 112 58.6 112.9Q57.6 113.8 56.5 114.7Q55.5 115.7 54.5 116.6Q53.5 117.5 52.5 118.4Q51.5 119.3 50.5 120.2Q49.5 121.1 48.5 122.1Q47.5 123 46.5 123.9Q45.6 124.8 44.6 125.8Q43.6 126.7 42.7 127.6Q41.7 128.5 40.7 129.5Q39.8 130.4 38.9 131.3Q37.9 132.3 37 133.2Q36 134.1 35.1 135.1L34.2 136M119 66Q116.7 67.6 113.9 67.8Q111.1 68.1 109.6 68.8Q108.2 69.5 106.7 70.2Q105.3 70.9 104 71.7Q102.6 72.4 101.3 73.2Q99.9 74 98.7 74.8Q97.4 75.6 96.1 76.4Q94.9 77.2 93.6 78Q92.4 78.8 91.2 79.6Q90 80.4 88.8 81.3Q87.7 82.1 86.5 83Q85.4 83.8 84.2 84.7Q83.1 85.5 82 86.4Q80.9 87.3 79.8 88.2Q78.7 89 77.7 89.9Q76.6 90.8 75.6 91.7Q74.5 92.6 73.5 93.5Q72.5 94.4 71.5 95.3Q70.5 96.2 69.5 97.2Q68.5 98.1 67.5 99Q66.6 99.9 65.6 100.8Q64.6 101.8 63.7 102.7Q62.7 103.6 61.8 104.6Q60.9 105.5 60 106.4Q59 107.4 58.1 108.3Q57.2 109.3 56.3 110.2Q55.4 111.2 54.6 112.1Q53.7 113 52.8 114Q51.9 114.9 51.1 115.9Q50.2 116.8 49.3 117.8Q48.5 118.7 47.6 119.7Q46.8 120.7 46 121.6Q45.1 122.6 44.3 123.5Q43.5 124.5 42.7 125.4Q41.8 126.4 41 127.3Q40.2 128.3 39.4 129.3Q38.6 130.2 37.8 131.2Q37 132.1 36.2 133.1Q35.5 134 34.8 135Q34.2 136 35.2 135.4Q36.1 134.7 37.1 133.9Q38 133.1 39 132.4Q40 131.6 40.9 130.8Q41.9 130 42.9 129.3Q43.8 128.5 44.8 127.7Q45.8 126.9 46.8 126.2Q47.8 125.4 48.8 124.6Q49.8 123.9 50.8 123.1Q51.8 122.4 52.8 121.6Q53.8 120.8 54.8 120.1Q55.8 119.3 56.9 118.6Q57.9 117.8 58.9 117Q59.9 116.3 61 115.5Q62 114.8 63.1 114Q64.1 113.2 65.1 112.5Q66.2 111.7 67.2 111Q68.3 110.2 69.3 109.4Q70.4 108.7 71.4 107.9Q72.5 107.1 73.6 106.3Q74.6 105.6 75.7 104.8Q76.8 104 77.8 103.2Q78.9 102.4 80 101.6Q81.1 100.8 82.1 100Q83.2 99.2 84.3 98.4Q85.4 97.5 86.5 96.7Q87.6 95.9 88.7 95Q89.8 94.2 90.9 93.3Q91.9 92.5 93 91.6Q94.1 90.7 95.3 89.8Q96.4 88.9 97.5 88Q98.6 87.1 99.7 86.2Q100.8 85.2 101.9 84.3Q103 83.3 104.2 82.3Q105.3 81.3 106.4 80.3Q107.5 79.3 108.7 78.2Q109.8 77.2 110.9 76.1Q112 75 113.2 73.8Q114.3 72.7 115.5 70.1Q116.7 67.6 117.9 66.8L119 66ZM117 62Q114.1 63.1 112.6 63.6Q111.2 64.2 109.7 64.7Q108.3 65.3 106.8 65.8Q105.4 66.4 103.9 67Q102.4 67.5 101 68.1Q99.5 68.7 98.1 69.3Q96.6 69.8 95.2 70.4Q93.7 71 92.3 71.6Q90.9 72.2 89.4 72.8Q88 73.4 86.5 74Q85.1 74.6 83.7 75.2Q82.2 75.8 80.8 76.4Q79.3 77 77.9 77.7Q76.5 78.3 75.1 78.9Q73.6 79.5 72.2 80.1Q70.8 80.8 69.4 81.4Q67.9 82 66.5 82.7Q65.1 83.3 63.7 84Q62.3 84.6 60.9 85.3Q59.5 85.9 58 86.6Q56.6 87.2 55.2 87.9Q53.8 88.5 52.4 89.2Q51.1 89.9 49.7 90.5Q48.3 91.2 46.9 91.9Q45.5 92.5 44.1 93.2Q42.7 93.9 41.4 94.6Q40 95.3 38.6 96Q37.3 96.6 35.9 97.3Q34.5 98 33.2 98.7Q31.8 99.4 30.5 100.1Q29.1 100.8 27.8 101.5Q26.4 102.2 25.1 102.9Q23.8 103.6 22.4 104.3Q21.1 105 19.8 105.7Q18.5 106.5 17.2 107.2Q15.8 107.9 14.5 108.6Q13.2 109.3 11.9 110.1Q10.6 110.8 9.3 111.5Q8.1 112.2 6.8 113L5.5 113.7M117 62Q114.1 63.1 110.9 62.5Q107.7 62 105.9 62.3Q104.1 62.7 102.4 63.1Q100.7 63.5 99 63.9Q97.3 64.3 95.6 64.8Q94 65.3 92.3 65.8Q90.7 66.3 89.1 66.8Q87.6 67.3 86 67.8Q84.4 68.4 82.9 68.9Q81.4 69.5 79.9 70.1Q78.4 70.7 76.9 71.3Q75.4 71.9 74 72.5Q72.5 73.1 71.1 73.8Q69.7 74.4 68.3 75Q66.8 75.7 65.5 76.4Q64.1 77 62.7 77.7Q61.3 78.4 60 79.1Q58.6 79.8 57.3 80.5Q55.9 81.2 54.6 81.9Q53.3 82.6 52 83.3Q50.7 84.1 49.4 84.8Q48.1 85.5 46.8 86.3Q45.6 87 44.3 87.7Q43 88.5 41.8 89.2Q40.5 90 39.3 90.8Q38.1 91.5 36.8 92.3Q35.6 93.1 34.4 93.8Q33.2 94.6 31.9 95.4Q30.7 96.1 29.5 96.9Q28.3 97.7 27.1 98.5Q26 99.3 24.8 100.1Q23.6 100.8 22.4 101.6Q21.2 102.4 20.1 103.2Q18.9 104 17.7 104.8Q16.6 105.6 15.4 106.4Q14.3 107.2 13.1 108Q12 108.8 10.8 109.6Q9.7 110.4 8.6 111.2Q7.4 112 6.5 112.8Q5.5 113.7 6.7 113.3Q8 112.9 9.2 112.4Q10.5 111.8 11.8 111.3Q13 110.7 14.3 110.2Q15.6 109.6 16.9 109.1Q18.2 108.5 19.5 108Q20.8 107.5 22 106.9Q23.3 106.4 24.6 105.9Q25.9 105.3 27.2 104.8Q28.6 104.3 29.9 103.8Q31.2 103.2 32.5 102.7Q33.8 102.2 35.1 101.7Q36.5 101.1 37.8 100.6Q39.1 100.1 40.4 99.6Q41.8 99.1 43.1 98.6Q44.5 98 45.8 97.5Q47.1 97 48.5 96.5Q49.8 95.9 51.2 95.4Q52.5 94.9 53.9 94.3Q55.3 93.8 56.6 93.3Q58 92.7 59.4 92.2Q60.7 91.6 62.1 91.1Q63.5 90.5 64.9 90Q66.3 89.4 67.7 88.8Q69.1 88.3 70.5 87.7Q71.9 87.1 73.3 86.5Q74.7 85.9 76.1 85.3Q77.5 84.7 78.9 84Q80.3 83.4 81.8 82.8Q83.2 82.1 84.6 81.5Q86.1 80.8 87.5 80.1Q89 79.4 90.4 78.7Q91.9 78 93.4 77.3Q94.9 76.5 96.3 75.8Q97.8 75 99.3 74.2Q100.8 73.4 102.3 72.6Q103.9 71.7 105.4 70.8Q106.9 70 108.5 69Q110 68.1 112.1 65.6Q114.1 63.1 115.5 62.5L117 62ZM116 58Q112.8 58.3 111.2 58.4Q109.6 58.6 108 58.8Q106.4 58.9 104.8 59.1Q103.2 59.2 101.5 59.4Q99.9 59.6 98.3 59.8Q96.7 60 95.1 60.1Q93.5 60.3 91.9 60.5Q90.3 60.7 88.7 60.9Q87.1 61.1 85.5 61.3Q83.9 61.5 82.3 61.7Q80.7 61.9 79.1 62.2Q77.5 62.4 75.9 62.6Q74.3 62.8 72.7 63.1Q71.1 63.3 69.5 63.5Q67.9 63.8 66.3 64Q64.8 64.3 63.2 64.5Q61.6 64.8 60 65Q58.4 65.3 56.8 65.5Q55.2 65.8 53.6 66.1Q52.1 66.3 50.5 66.6Q48.9 66.9 47.3 67.2Q45.7 67.5 44.2 67.7Q42.6 68 41 68.3Q39.4 68.6 37.9 68.9Q36.3 69.2 34.7 69.5Q33.2 69.8 31.6 70.1Q30 70.4 28.5 70.7Q26.9 71.1 25.3 71.4Q23.8 71.7 22.2 72Q20.7 72.4 19.1 72.7Q17.6 73 16 73.3Q14.5 73.7 12.9 74Q11.4 74.4 9.8 74.7Q8.3 75.1 6.8 75.4Q5.2 75.8 3.7 76.1Q2.2 76.5 0.6 76.8Q-0.9 77.2 -2.4 77.6Q-3.9 77.9 -5.5 78.3Q-7 78.7 -8.5 79L-10 79.4M116 58Q112.8 58.3 109.7 56.8Q106.6 55.4 104.7 55.2Q102.8 55.1 101 55Q99.1 54.9 97.3 54.9Q95.5 54.9 93.7 54.9Q91.9 54.9 90.2 54.9Q88.4 55 86.7 55.1Q85 55.2 83.3 55.3Q81.6 55.4 79.9 55.5Q78.2 55.7 76.6 55.9Q74.9 56 73.3 56.3Q71.6 56.5 70 56.7Q68.4 56.9 66.8 57.2Q65.2 57.4 63.6 57.7Q62 58 60.5 58.3Q58.9 58.5 57.3 58.9Q55.8 59.2 54.2 59.5Q52.7 59.8 51.2 60.2Q49.7 60.5 48.2 60.9Q46.6 61.2 45.1 61.6Q43.7 62 42.2 62.4Q40.7 62.8 39.2 63.2Q37.7 63.5 36.3 64Q34.8 64.4 33.3 64.8Q31.9 65.2 30.4 65.6Q29 66.1 27.6 66.5Q26.1 66.9 24.7 67.4Q23.2 67.8 21.8 68.3Q20.4 68.7 19 69.2Q17.6 69.6 16.1 70.1Q14.7 70.5 13.3 71Q11.9 71.5 10.5 71.9Q9.1 72.4 7.7 72.9Q6.3 73.4 4.9 73.8Q3.5 74.3 2.1 74.8Q0.7 75.3 -0.6 75.8Q-2 76.2 -3.4 76.7Q-4.8 77.2 -6.2 77.7Q-7.5 78.2 -8.8 78.8Q-10 79.4 -8.6 79.4Q-7.3 79.3 -5.8 79.1Q-4.4 78.9 -2.9 78.7Q-1.5 78.6 -0 78.4Q1.4 78.2 2.9 78Q4.3 77.8 5.8 77.6Q7.2 77.4 8.7 77.3Q10.2 77.1 11.6 76.9Q13.1 76.8 14.5 76.6Q16 76.4 17.5 76.3Q18.9 76.1 20.4 75.9Q21.9 75.8 23.3 75.6Q24.8 75.5 26.3 75.3Q27.8 75.2 29.2 75Q30.7 74.9 32.2 74.7Q33.7 74.6 35.2 74.4Q36.7 74.3 38.1 74.1Q39.6 73.9 41.1 73.8Q42.6 73.6 44.1 73.5Q45.6 73.3 47.2 73.1Q48.7 73 50.2 72.8Q51.7 72.6 53.2 72.4Q54.7 72.3 56.3 72.1Q57.8 71.9 59.4 71.7Q60.9 71.5 62.5 71.3Q64 71.1 65.6 70.9Q67.1 70.7 68.7 70.4Q70.3 70.2 71.9 70Q73.5 69.7 75.1 69.4Q76.7 69.2 78.3 68.9Q79.9 68.6 81.5 68.3Q83.2 68 84.8 67.7Q86.5 67.4 88.1 67.1Q89.8 66.7 91.5 66.3Q93.2 66 94.9 65.6Q96.6 65.2 98.4 64.7Q100.1 64.3 101.9 63.8Q103.7 63.4 105.5 62.8Q107.3 62.3 110.1 60.3Q112.8 58.3 114.4 58.1L116 58ZM116 54Q112.9 53.4 111.3 53.1Q109.8 52.8 108.2 52.5Q106.7 52.2 105.1 51.9Q103.6 51.6 102 51.4Q100.5 51.1 98.9 50.8Q97.3 50.5 95.8 50.3Q94.2 50 92.7 49.7Q91.1 49.5 89.6 49.2Q88 49 86.4 48.8Q84.9 48.5 83.3 48.3Q81.8 48 80.2 47.8Q78.6 47.6 77.1 47.4Q75.5 47.1 74 46.9Q72.4 46.7 70.8 46.5Q69.3 46.3 67.7 46.1Q66.2 45.9 64.6 45.7Q63 45.5 61.5 45.3Q59.9 45.1 58.3 45Q56.8 44.8 55.2 44.6Q53.7 44.4 52.1 44.3Q50.5 44.1 49 43.9Q47.4 43.8 45.8 43.6Q44.3 43.5 42.7 43.3Q41.1 43.2 39.6 43Q38 42.9 36.5 42.8Q34.9 42.6 33.3 42.5Q31.8 42.4 30.2 42.3Q28.6 42.1 27.1 42Q25.5 41.9 23.9 41.8Q22.4 41.7 20.8 41.6Q19.2 41.5 17.7 41.4Q16.1 41.3 14.5 41.2Q13 41.1 11.4 41.1Q9.8 41 8.3 40.9Q6.7 40.8 5.1 40.8Q3.6 40.7 2 40.6Q0.4 40.6 -1.1 40.5Q-2.7 40.5 -4.3 40.4Q-5.8 40.4 -7.4 40.3L-9 40.3M116 54Q112.9 53.4 110.3 51Q107.8 48.6 106 48Q104.2 47.3 102.5 46.6Q100.8 46 99.1 45.5Q97.3 44.9 95.7 44.4Q94 43.9 92.3 43.5Q90.6 43 89 42.6Q87.3 42.2 85.7 41.9Q84 41.5 82.4 41.2Q80.8 40.9 79.2 40.6Q77.6 40.3 76 40Q74.4 39.8 72.8 39.6Q71.2 39.3 69.6 39.1Q68.1 38.9 66.5 38.8Q64.9 38.6 63.4 38.5Q61.8 38.3 60.3 38.2Q58.8 38.1 57.2 38Q55.7 37.9 54.2 37.8Q52.7 37.7 51.1 37.7Q49.6 37.6 48.1 37.6Q46.6 37.5 45.1 37.5Q43.6 37.5 42.1 37.5Q40.6 37.5 39.1 37.5Q37.6 37.5 36.2 37.5Q34.7 37.5 33.2 37.6Q31.7 37.6 30.2 37.6Q28.8 37.7 27.3 37.7Q25.8 37.8 24.4 37.8Q22.9 37.9 21.4 37.9Q20 38 18.5 38.1Q17 38.2 15.6 38.2Q14.1 38.3 12.7 38.4Q11.2 38.5 9.7 38.6Q8.3 38.7 6.8 38.8Q5.4 38.9 3.9 39Q2.5 39.1 1 39.2Q-0.5 39.3 -1.9 39.4Q-3.4 39.5 -4.8 39.6Q-6.3 39.7 -7.6 40Q-9 40.3 -7.6 40.6Q-6.3 41 -4.9 41.2Q-3.4 41.4 -2 41.6Q-0.6 41.8 0.9 42Q2.3 42.2 3.8 42.4Q5.2 42.7 6.6 42.9Q8.1 43.1 9.5 43.3Q10.9 43.6 12.4 43.8Q13.8 44.1 15.2 44.3Q16.6 44.5 18.1 44.8Q19.5 45 20.9 45.3Q22.4 45.5 23.8 45.8Q25.2 46.1 26.6 46.3Q28.1 46.6 29.5 46.8Q30.9 47.1 32.4 47.3Q33.8 47.6 35.2 47.9Q36.7 48.1 38.1 48.4Q39.5 48.7 41 48.9Q42.4 49.2 43.9 49.4Q45.3 49.7 46.8 49.9Q48.3 50.2 49.7 50.5Q51.2 50.7 52.7 51Q54.1 51.2 55.6 51.4Q57.1 51.7 58.6 51.9Q60.1 52.2 61.6 52.4Q63.1 52.6 64.6 52.8Q66.2 53 67.7 53.3Q69.2 53.5 70.8 53.7Q72.3 53.9 73.9 54Q75.5 54.2 77.1 54.4Q78.7 54.6 80.3 54.7Q81.9 54.9 83.6 55Q85.2 55.2 86.9 55.3Q88.6 55.4 90.3 55.5Q92 55.6 93.7 55.7Q95.4 55.8 97.2 55.8Q99 55.9 100.8 55.9Q102.6 55.9 104.5 55.9Q106.4 55.9 109.6 54.6Q112.9 53.4 114.4 53.7L116 54ZM118 50Q115.4 48.6 114.1 47.9Q112.8 47.2 111.6 46.5Q110.3 45.8 109 45.1Q107.7 44.4 106.4 43.8Q105.1 43.1 103.8 42.4Q102.5 41.7 101.2 41.1Q99.9 40.4 98.6 39.8Q97.3 39.1 96 38.5Q94.7 37.8 93.4 37.2Q92.1 36.5 90.8 35.9Q89.5 35.2 88.2 34.6Q86.9 34 85.6 33.4Q84.3 32.8 82.9 32.1Q81.6 31.5 80.3 30.9Q79 30.3 77.7 29.7Q76.4 29.1 75 28.5Q73.7 27.9 72.4 27.3Q71.1 26.8 69.8 26.2Q68.4 25.6 67.1 25Q65.8 24.5 64.4 23.9Q63.1 23.3 61.8 22.8Q60.4 22.2 59.1 21.7Q57.8 21.1 56.4 20.6Q55.1 20 53.7 19.5Q52.4 19 51 18.4Q49.7 17.9 48.4 17.4Q47 16.9 45.6 16.4Q44.3 15.8 42.9 15.3Q41.6 14.8 40.2 14.3Q38.8 13.8 37.5 13.3Q36.1 12.9 34.7 12.4Q33.4 11.9 32 11.4Q30.6 10.9 29.2 10.5Q27.9 10 26.5 9.5Q25.1 9.1 23.7 8.6Q22.3 8.2 20.9 7.7Q19.5 7.3 18.2 6.8Q16.8 6.4 15.4 5.9Q14 5.5 12.6 5.1L11.1 4.7M118 50Q115.4 48.6 113.8 45.6Q112.2 42.6 110.8 41.5Q109.4 40.4 108.1 39.3Q106.7 38.3 105.3 37.3Q104 36.3 102.6 35.4Q101.3 34.4 99.9 33.6Q98.6 32.7 97.2 31.9Q95.9 31 94.5 30.3Q93.2 29.5 91.8 28.7Q90.5 28 89.1 27.3Q87.8 26.6 86.5 25.9Q85.1 25.3 83.8 24.7Q82.5 24 81.1 23.4Q79.8 22.8 78.5 22.3Q77.1 21.7 75.8 21.2Q74.5 20.6 73.1 20.1Q71.8 19.6 70.5 19.1Q69.2 18.6 67.9 18.1Q66.5 17.7 65.2 17.2Q63.9 16.8 62.6 16.4Q61.3 15.9 59.9 15.5Q58.6 15.1 57.3 14.7Q56 14.3 54.7 14Q53.4 13.6 52 13.2Q50.7 12.9 49.4 12.5Q48.1 12.2 46.8 11.8Q45.5 11.5 44.1 11.2Q42.8 10.9 41.5 10.5Q40.2 10.2 38.9 9.9Q37.6 9.6 36.3 9.3Q34.9 9 33.6 8.7Q32.3 8.5 31 8.2Q29.7 7.9 28.3 7.6Q27 7.4 25.7 7.1Q24.4 6.8 23 6.5Q21.7 6.3 20.4 6Q19 5.8 17.7 5.5Q16.4 5.3 15 5Q13.7 4.8 12.4 4.7Q11.1 4.7 12.2 5.3Q13.3 6 14.6 6.5Q15.8 7.1 17 7.6Q18.3 8.2 19.5 8.7Q20.7 9.3 21.9 9.9Q23.2 10.4 24.4 11Q25.6 11.6 26.8 12.1Q28 12.7 29.2 13.3Q30.4 13.9 31.6 14.5Q32.8 15.1 34 15.7Q35.2 16.2 36.4 16.8Q37.5 17.4 38.7 18Q39.9 18.6 41.1 19.2Q42.3 19.8 43.5 20.5Q44.6 21.1 45.8 21.7Q47 22.3 48.2 22.9Q49.4 23.5 50.6 24.1Q51.8 24.7 52.9 25.3Q54.1 26 55.3 26.6Q56.5 27.2 57.7 27.8Q58.9 28.4 60.1 29Q61.3 29.6 62.6 30.3Q63.8 30.9 65 31.5Q66.2 32.1 67.5 32.7Q68.7 33.3 70 33.9Q71.2 34.5 72.5 35.1Q73.8 35.7 75.1 36.3Q76.4 36.9 77.7 37.5Q79 38.1 80.3 38.7Q81.7 39.3 83 39.9Q84.4 40.5 85.8 41Q87.2 41.6 88.6 42.2Q90 42.8 91.4 43.3Q92.9 43.9 94.4 44.4Q95.8 45 97.4 45.5Q98.9 46.1 100.5 46.6Q102 47.1 103.6 47.6Q105.3 48.1 107 48.6Q108.7 49.1 112 48.9Q115.4 48.6 116.7 49.3L118 50ZM121 46Q119.2 44.1 118.3 43.1Q117.4 42.2 116.5 41.2Q115.6 40.2 114.7 39.3Q113.8 38.4 112.9 37.4Q112 36.5 111.1 35.5Q110.2 34.6 109.3 33.7Q108.4 32.8 107.5 31.8Q106.6 30.9 105.7 30Q104.8 29.1 103.8 28.2Q102.9 27.3 102 26.4Q101.1 25.5 100.2 24.6Q99.2 23.7 98.3 22.8Q97.4 21.9 96.5 21.1Q95.5 20.2 94.6 19.3Q93.7 18.4 92.7 17.6Q91.8 16.7 90.8 15.9Q89.9 15 89 14.1Q88 13.3 87.1 12.5Q86.1 11.6 85.2 10.8Q84.2 9.9 83.2 9.1Q82.3 8.3 81.3 7.5Q80.3 6.6 79.4 5.8Q78.4 5 77.4 4.2Q76.4 3.4 75.5 2.6Q74.5 1.8 73.5 1Q72.5 0.2 71.5 -0.6Q70.5 -1.4 69.5 -2.2Q68.5 -2.9 67.5 -3.7Q66.5 -4.5 65.5 -5.2Q64.5 -6 63.4 -6.8Q62.4 -7.5 61.4 -8.3Q60.4 -9 59.3 -9.8Q58.3 -10.5 57.2 -11.2Q56.2 -12 55.2 -12.7Q54.1 -13.4 53.1 -14.2Q52 -14.9 50.9 -15.6Q49.9 -16.3 48.8 -17Q47.7 -17.7 46.6 -18.4Q45.6 -19.1 44.5 -19.8L43.4 -20.5M121 46Q119.2 44.1 118.7 41Q118.2 37.9 117.3 36.5Q116.5 35.1 115.6 33.8Q114.8 32.5 113.9 31.3Q113.1 30.1 112.2 28.9Q111.3 27.7 110.4 26.6Q109.5 25.5 108.6 24.4Q107.7 23.3 106.8 22.3Q105.9 21.2 104.9 20.2Q104 19.2 103.1 18.2Q102.1 17.3 101.2 16.3Q100.3 15.4 99.3 14.5Q98.4 13.6 97.4 12.7Q96.5 11.9 95.5 11Q94.5 10.2 93.6 9.4Q92.6 8.6 91.6 7.8Q90.6 7 89.7 6.2Q88.7 5.4 87.7 4.7Q86.7 4 85.7 3.2Q84.7 2.5 83.7 1.8Q82.7 1.1 81.7 0.4Q80.7 -0.3 79.7 -0.9Q78.7 -1.6 77.7 -2.2Q76.7 -2.9 75.7 -3.5Q74.7 -4.2 73.7 -4.8Q72.7 -5.4 71.6 -6Q70.6 -6.6 69.6 -7.2Q68.6 -7.8 67.5 -8.4Q66.5 -9 65.5 -9.6Q64.5 -10.1 63.4 -10.7Q62.4 -11.3 61.3 -11.8Q60.3 -12.4 59.3 -12.9Q58.2 -13.5 57.2 -14Q56.1 -14.6 55.1 -15.1Q54 -15.7 53 -16.2Q51.9 -16.7 50.8 -17.3Q49.8 -17.8 48.7 -18.3Q47.6 -18.8 46.6 -19.3Q45.5 -19.8 44.4 -20.2Q43.4 -20.5 44.1 -19.7Q44.9 -18.8 45.8 -18.1Q46.7 -17.3 47.6 -16.6Q48.5 -15.8 49.4 -15Q50.2 -14.3 51.1 -13.5Q52 -12.7 52.9 -11.9Q53.7 -11.2 54.6 -10.4Q55.4 -9.6 56.3 -8.8Q57.1 -8 58 -7.2Q58.8 -6.4 59.7 -5.6Q60.5 -4.8 61.3 -4Q62.1 -3.2 63 -2.4Q63.8 -1.6 64.6 -0.8Q65.4 -0 66.2 0.8Q67.1 1.6 67.9 2.4Q68.7 3.2 69.5 4.1Q70.3 4.9 71.1 5.7Q72 6.5 72.8 7.4Q73.6 8.2 74.4 9Q75.3 9.8 76.1 10.7Q76.9 11.5 77.8 12.3Q78.6 13.2 79.4 14Q80.3 14.9 81.1 15.7Q82 16.5 82.9 17.4Q83.7 18.2 84.6 19.1Q85.5 19.9 86.4 20.8Q87.3 21.6 88.2 22.5Q89.1 23.3 90.1 24.2Q91 25.1 91.9 25.9Q92.9 26.8 93.9 27.6Q94.9 28.5 95.9 29.4Q96.9 30.2 97.9 31.1Q99 32 100 32.9Q101.1 33.7 102.2 34.6Q103.3 35.5 104.4 36.4Q105.6 37.3 106.8 38.2Q108 39.1 109.2 39.9Q110.5 40.8 111.8 41.7Q113.1 42.6 116.2 43.3Q119.2 44.1 120.1 45L121 46ZM126 43Q125 40.9 124.5 39.9Q124 38.8 123.5 37.8Q123.1 36.8 122.6 35.8Q122.1 34.7 121.6 33.7Q121.1 32.7 120.6 31.7Q120.1 30.7 119.6 29.7Q119.1 28.7 118.6 27.7Q118 26.7 117.5 25.7Q117 24.7 116.5 23.7Q116 22.7 115.5 21.7Q115 20.7 114.4 19.8Q113.9 18.8 113.4 17.8Q112.9 16.9 112.3 15.9Q111.8 14.9 111.3 14Q110.7 13 110.2 12.1Q109.7 11.1 109.1 10.2Q108.6 9.2 108 8.3Q107.5 7.3 106.9 6.4Q106.3 5.5 105.8 4.6Q105.2 3.6 104.7 2.7Q104.1 1.8 103.5 0.9Q102.9 -0 102.4 -0.9Q101.8 -1.8 101.2 -2.7Q100.6 -3.6 100 -4.5Q99.4 -5.4 98.8 -6.3Q98.2 -7.2 97.6 -8.1Q97 -8.9 96.4 -9.8Q95.8 -10.7 95.2 -11.6Q94.5 -12.4 93.9 -13.3Q93.3 -14.1 92.6 -15Q92 -15.8 91.3 -16.7Q90.7 -17.5 90 -18.4Q89.4 -19.2 88.7 -20Q88.1 -20.9 87.4 -21.7Q86.7 -22.5 86 -23.3Q85.3 -24.2 84.7 -25Q84 -25.8 83.3 -26.6Q82.6 -27.4 81.8 -28.2Q81.1 -29 80.4 -29.8L79.7 -30.5M126 43Q125 40.9 125.4 38.2Q125.8 35.5 125.5 34.1Q125.1 32.8 124.8 31.5Q124.4 30.2 124 28.9Q123.6 27.6 123.2 26.4Q122.8 25.2 122.4 24.1Q121.9 22.9 121.5 21.8Q121 20.6 120.5 19.5Q120.1 18.4 119.6 17.3Q119.1 16.3 118.6 15.2Q118 14.2 117.5 13.2Q117 12.1 116.4 11.2Q115.9 10.2 115.3 9.2Q114.8 8.2 114.2 7.3Q113.7 6.4 113.1 5.4Q112.5 4.5 111.9 3.6Q111.3 2.7 110.7 1.9Q110.1 1 109.5 0.1Q108.9 -0.7 108.3 -1.6Q107.6 -2.4 107 -3.2Q106.4 -4.1 105.7 -4.9Q105.1 -5.7 104.4 -6.5Q103.8 -7.3 103.1 -8Q102.5 -8.8 101.8 -9.6Q101.1 -10.3 100.5 -11.1Q99.8 -11.8 99.1 -12.6Q98.4 -13.3 97.8 -14Q97.1 -14.8 96.4 -15.5Q95.7 -16.2 95 -16.9Q94.3 -17.6 93.6 -18.3Q92.9 -19 92.2 -19.7Q91.5 -20.4 90.8 -21.1Q90.1 -21.7 89.3 -22.4Q88.6 -23.1 87.9 -23.8Q87.2 -24.4 86.4 -25.1Q85.7 -25.7 85 -26.4Q84.2 -27 83.5 -27.7Q82.8 -28.3 82 -29Q81.3 -29.6 80.5 -30.1Q79.7 -30.5 80.1 -29.7Q80.5 -28.9 81 -28.1Q81.6 -27.3 82.1 -26.5Q82.7 -25.7 83.2 -24.9Q83.7 -24.1 84.2 -23.2Q84.8 -22.4 85.3 -21.6Q85.8 -20.8 86.3 -20Q86.8 -19.1 87.3 -18.3Q87.7 -17.5 88.2 -16.7Q88.7 -15.8 89.2 -15Q89.6 -14.2 90.1 -13.3Q90.6 -12.5 91 -11.6Q91.5 -10.8 92 -10Q92.4 -9.1 92.9 -8.3Q93.3 -7.4 93.8 -6.5Q94.2 -5.7 94.7 -4.8Q95.1 -4 95.6 -3.1Q96 -2.2 96.5 -1.4Q96.9 -0.5 97.4 0.4Q97.8 1.3 98.3 2.1Q98.7 3 99.2 3.9Q99.7 4.8 100.1 5.7Q100.6 6.6 101.1 7.5Q101.6 8.4 102 9.3Q102.5 10.2 103 11.1Q103.5 12.1 104 13Q104.5 13.9 105.1 14.9Q105.6 15.8 106.1 16.8Q106.7 17.7 107.2 18.7Q107.8 19.6 108.4 20.6Q109 21.6 109.6 22.5Q110.2 23.5 110.8 24.5Q111.4 25.5 112.1 26.5Q112.7 27.5 113.4 28.6Q114.1 29.6 114.8 30.6Q115.5 31.7 116.2 32.7Q117 33.8 117.8 34.8Q118.6 35.9 119.5 37Q120.3 38.1 122.7 39.5Q125 40.9 125.5 42L126 43Z","fbarbs":"M103.1 77.3L103 83.3M103.1 77.3L97.4 75.6M96.4 82.3L96.4 88.9M96.4 82.3L90 80.4M89.7 87.4L89.8 94.2M89.7 87.4L83.1 85.5M83.1 92.5L83.2 99.2M83.1 92.5L76.6 90.8M76.5 97.8L76.8 104M76.5 97.8L70.5 96.2M70.1 103.1L70.4 108.7M70.1 103.1L64.6 101.8M63.8 108.4L64.1 113.2M63.8 108.4L59 107.4M57.6 113.8L57.9 117.8M57.6 113.8L53.7 113M51.5 119.3L51.8 122.4M51.5 119.3L48.5 118.7M45.6 124.8L45.8 126.9M45.6 124.8L43.5 124.5M39.8 130.4L40 131.6M39.8 130.4L38.6 130.2M96.6 69.8L94.9 76.5M96.6 69.8L90.7 66.3M88 73.4L86.1 80.8M88 73.4L81.4 69.5M79.3 77L77.5 84.7M79.3 77L72.5 73.1M70.8 80.8L69.1 88.3M70.8 80.8L64.1 77M62.3 84.6L60.7 91.6M62.3 84.6L55.9 81.2M53.8 88.5L52.5 94.9M53.8 88.5L48.1 85.5M45.5 92.5L44.5 98M45.5 92.5L40.5 90M37.3 96.6L36.5 101.1M37.3 96.6L33.2 94.6M29.1 100.8L28.6 104.3M29.1 100.8L26 99.3M21.1 105L20.8 107.5M21.1 105L18.9 104M13.2 109.3L13 110.7M13.2 109.3L12 108.8M93.5 60.3L89.8 66.7M93.5 60.3L88.4 55M83.9 61.5L79.9 68.6M83.9 61.5L78.2 55.7M74.3 62.8L70.3 70.2M74.3 62.8L68.4 56.9M64.8 64.3L60.9 71.5M64.8 64.3L58.9 58.5M55.2 65.8L51.7 72.6M55.2 65.8L49.7 60.5M45.7 67.5L42.6 73.6M45.7 67.5L40.7 62.8M36.3 69.2L33.7 74.6M36.3 69.2L31.9 65.2M26.9 71.1L24.8 75.5M26.9 71.1L23.2 67.8M17.6 73L16 76.4M17.6 73L14.7 70.5M8.3 75.1L7.2 77.4M8.3 75.1L6.3 73.4M-0.9 77.2L-1.5 78.6M-0.9 77.2L-2 76.2M94.2 50L88.6 55.4M94.2 50L90.6 43M84.9 48.5L78.7 54.6M84.9 48.5L80.8 40.9M75.5 47.1L69.2 53.5M75.5 47.1L71.2 39.3M66.2 45.9L60.1 52.2M66.2 45.9L61.8 38.3M56.8 44.8L51.2 50.7M56.8 44.8L52.7 37.7M47.4 43.8L42.4 49.2M47.4 43.8L43.6 37.5M38 42.9L33.8 47.6M38 42.9L34.7 37.5M28.6 42.1L25.2 46.1M28.6 42.1L25.8 37.8M19.2 41.5L16.6 44.5M19.2 41.5L17 38.2M9.8 41L8.1 43.1M9.8 41L8.3 38.7M0.4 40.6L-0.6 41.8M0.4 40.6L-0.5 39.3M99.9 40.4L92.9 43.9M99.9 40.4L98.6 32.7M92.1 36.5L84.4 40.5M92.1 36.5L90.5 28M84.3 32.8L76.4 36.9M84.3 32.8L82.5 24M76.4 29.1L68.7 33.3M76.4 29.1L74.5 20.6M68.4 25.6L61.3 29.6M68.4 25.6L66.5 17.7M60.4 22.2L54.1 26M60.4 22.2L58.6 15.1M52.4 19L47 22.3M52.4 19L50.7 12.9M44.3 15.8L39.9 18.6M44.3 15.8L42.8 10.9M36.1 12.9L32.8 15.1M36.1 12.9L34.9 9M27.9 10L25.6 11.6M27.9 10L27 7.4M19.5 7.3L18.3 8.2M19.5 7.3L19 5.8M108.4 32.8L101.1 33.7M108.4 32.8L109.5 25.5M102.9 27.3L94.9 28.5M102.9 27.3L104 19.2M97.4 21.9L89.1 23.3M97.4 21.9L98.4 13.6M91.8 16.7L83.7 18.2M91.8 16.7L92.6 8.6M86.1 11.6L78.6 13.2M86.1 11.6L86.7 4M80.3 6.6L73.6 8.2M80.3 6.6L80.7 -0.3M74.5 1.8L68.7 3.2M74.5 1.8L74.7 -4.2M68.5 -2.9L63.8 -1.6M68.5 -2.9L68.6 -7.8M62.4 -7.5L58.8 -6.4M62.4 -7.5L62.4 -11.3M56.2 -12L53.7 -11.2M56.2 -12L56.1 -14.6M49.9 -16.3L48.5 -15.8M49.9 -16.3L49.8 -17.8M119.1 28.7L112.7 27.5M119.1 28.7L121.9 22.9M116 22.7L109 21.6M116 22.7L119.1 16.3M112.9 16.9L105.6 15.8M112.9 16.9L115.9 10.2M109.7 11.1L102.5 10.2M109.7 11.1L112.5 4.5M106.3 5.5L99.7 4.8M106.3 5.5L108.9 -0.7M102.9 -0L96.9 -0.5M102.9 -0L105.1 -5.7M99.4 -5.4L94.2 -5.7M99.4 -5.4L101.1 -10.3M95.8 -10.7L91.5 -10.8M95.8 -10.7L97.1 -14.8M92 -15.8L88.7 -15.8M92 -15.8L92.9 -19M88.1 -20.9L85.8 -20.8M88.1 -20.9L88.6 -23.1M84 -25.8L82.7 -25.7M84 -25.8L84.2 -27","clip":"M137.0 3.0L130.7 4.3L128.0 7.3L125.7 7.3L124.0 10.7L115.7 14.7L114.3 20.3L107.7 21.3L104.3 27.7L96.3 28.0L90.7 34.0L90.7 35.7L93.7 37.7L93.7 41.0L85.3 50.3L80.7 51.7L78.3 55.3L78.0 66.3L91.7 80.0L100.3 80.0L104.3 81.7L112.3 71.3L120.7 70.3L133.7 58.3L147.0 57.7L151.3 54.3L165.3 54.7L165.0 57.7L141.3 70.0L128.3 79.0L123.7 78.7L118.3 93.7L118.0 102.7L116.3 106.0L117.0 111.3L114.3 113.7L114.7 132.3L112.3 133.0L105.3 141.7L106.7 151.3L104.3 153.7L106.7 155.7L106.3 170.3L112.7 180.3L111.7 194.7L119.3 209.3L122.0 220.7L129.3 220.7L124.3 189.3L124.0 162.3L132.3 163.0L133.7 166.0L139.0 169.7L140.0 175.0L142.7 178.7L147.3 177.7L157.3 186.0L165.3 188.3L172.3 194.7L187.0 199.0L181.3 189.3L181.3 183.3L193.7 170.3L198.0 169.7L201.0 167.3L210.3 166.7L215.3 161.3L215.3 155.0L217.3 151.0L215.3 141.0L216.3 138.3L218.3 138.3L217.3 132.7L219.0 131.0L215.7 116.3L219.0 116.0L223.7 111.0L222.7 106.3L213.7 92.3L210.3 83.3L206.3 82.0L206.3 77.7L211.0 76.0L211.3 73.7L207.7 64.3L203.3 60.7L203.3 56.3L201.0 52.7L187.7 39.0L183.3 36.7L181.0 31.7L155.0 7.7L149.0 7.3L147.3 4.7L138.7 4.3Z"};
+  // kind: 'head' (logo fino) ou 'full' (ilustração grande, com penas). sw = [contorno, principais, detalhes, penas]
+  let artN = 0;
+  function artSVG(kind, stroke, sw, minor) {
+    const p = (d, w) => '<path d="' + d + '" stroke-width="' + w + '"/>';
+    let feathers = '', defs = '';
+    if (kind === 'full') {
+      const id = 'artmask' + (++artN), v = ART.full;
+      defs = '<defs><mask id="' + id + '" maskUnits="userSpaceOnUse" x="' + (v[0]-10) + '" y="' + (v[1]-10) + '" width="' + (v[2]+20) + '" height="' + (v[3]+20) + '"><rect x="' + (v[0]-10) + '" y="' + (v[1]-10) + '" width="' + (v[2]+20) + '" height="' + (v[3]+20) + '" fill="#fff"/><path d="' + ART.clip + '" fill="#000" stroke="#000" stroke-width="1"/></mask></defs>';
+      feathers = '<g mask="url(#' + id + ')">' + p(ART.fmain, sw[3]) + p(ART.fbarbs, sw[3] * .55) + '</g>';
+    }
+    return '<svg viewBox="' + ART[kind].join(' ') + '" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="' + stroke + '" stroke-linecap="round" stroke-linejoin="round">' + defs + feathers +
+      p(ART.outline, sw[0]) + p(ART.major, sw[1]) + (minor === false ? '' : p(ART.minor, sw[2])) + '</svg>';
+  }
+  /*BRAND_END*/
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC8OITLp-lhsaqntHYZh_aPmR_qCopalCY",
-    authDomain: "codajas-19566.firebaseapp.com",
-    databaseURL: "https://codajas-19566-default-rtdb.firebaseio.com",
-    projectId: "codajas-19566",
-    storageBucket: "codajas-19566.firebasestorage.app",
-    messagingSenderId: "377307218396",
-    appId: "1:377307218396:web:fc9db5f3563bb1d7c1cf19",
-    measurementId: "G-0GN41WDZCV"
-  };
+  document.getElementById('brandMark').innerHTML = artSVG('head', 'currentColor', [2.4, 1.8, 1]);
+  document.getElementById('hero').innerHTML = artSVG('full', 'currentColor', [.5, .36, .28, .55]);
+  document.getElementById('favicon').href = 'data:image/svg+xml,' + encodeURIComponent(artSVG('head', '#a1a1aa', [3.6, 3, 2], false));
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  // Provedores: nome, domínio (para o favicon oficial), link direto (página de chaves ou site oficial) e variáveis do .env
+  const PROVIDERS = [
+    { name: "Agnes AI",        domain: "agnes-ai.com",         url: "https://agnes-ai.com/",                    envs: ["AGNES_API_KEY"] },
+    { name: "AI Gateway",      domain: "vercel.com",           url: "https://vercel.com/ai-gateway",            envs: ["AI_GATEWAY_API_KEY"] },
+    { name: "Anthropic",       domain: "anthropic.com",        url: "https://console.anthropic.com/settings/keys", envs: ["ANTHROPIC_API_KEY"] },
+    { name: "AtlasCloud",      domain: "atlascloud.ai",        url: "https://console.atlascloud.ai/",           envs: ["ATLASCLOUD_API_KEY"] },
+    { name: "Chutes",          domain: "chutes.ai",            url: "https://chutes.ai/app/api",                envs: ["CHUTES_API_KEY"] },
+    { name: "Cloudflare",      domain: "cloudflare.com",       url: "https://dash.cloudflare.com/profile/api-tokens", envs: ["CLOUDFLARE_API_KEY", "CLOUDFLARE_ACCOUNT_ID"] },
+    { name: "Cohere",          domain: "cohere.com",           url: "https://dashboard.cohere.com/api-keys",    envs: ["COHERE_API_KEY"] },
+    { name: "DeepSeek",        domain: "deepseek.com",         url: "https://platform.deepseek.com/api_keys",   envs: ["DEEPSEEK_API_KEY"] },
+    { name: "Google Gemini",   domain: "gemini.google.com",    url: "https://aistudio.google.com/apikey",       envs: ["GEMINI_API_KEY", "GOOGLE_API_KEY"] },
+    { name: "MiniMax",         domain: "minimax.io",           url: "https://platform.minimax.io/user-center/basic-information/interface-key", envs: ["MINIMAX_API_KEY"] },
+    { name: "Novita",          domain: "novita.ai",            url: "https://novita.ai/settings/key-management", envs: ["NOVITA_API_KEY"] },
+    { name: "NVIDIA NIM",      domain: "nvidia.com",           url: "https://build.nvidia.com/settings/api-keys", envs: ["NVIDIA_NIM_API_KEY"] },
+    { name: "Ollama",          domain: "ollama.com",           url: "https://ollama.com/settings/keys",         envs: ["OLLAMA_API_KEY"] },
+    { name: "OpenAI",          domain: "openai.com",           url: "https://platform.openai.com/api-keys",     envs: ["OPENAI_API_KEY"] },
+    { name: "OpenRouter",      domain: "openrouter.ai",        url: "https://openrouter.ai/settings/keys",      envs: ["OPENROUTER_API_KEY"] },
+    { name: "Opper",           domain: "opper.ai",             url: "https://opper.ai/",                        envs: ["OPPER_API_KEY"] },
+    { name: "SiliconFlow",     domain: "siliconflow.com",      url: "https://cloud.siliconflow.com/me/account/ak", envs: ["SILICONFLOW_API_KEY"] },
+    { name: "TokenRouter",     domain: "tokenrouter.com",      url: "https://www.tokenrouter.com/",             envs: ["TOKENROUTER_API_KEY"] },
+    { name: "Vertex AI",       domain: "cloud.google.com",     url: "https://console.cloud.google.com/vertex-ai", envs: ["VERTEX_PROJECT_ID"] },
+    { name: "Wafer",           domain: "wafer.ai",             url: "https://www.wafer.ai/",                    envs: ["WAFER_API_KEY"] },
+    { name: "Weights & Biases", domain: "wandb.ai",            url: "https://wandb.ai/authorize",               envs: ["WANDB_API_KEY"] },
+    { name: "XKiro",           domain: "xkiro.com",            url: "https://xkiro.com/",                       envs: ["XKIRO_API_KEY"] },
+    { name: "ZAI",             domain: "z.ai",                 url: "https://z.ai/manage-apikey/apikey-list",   envs: ["ZAI_API_KEY"] },
+    { name: "ZenMux",          domain: "zenmux.ai",            url: "https://zenmux.ai/",                       envs: ["ZENMUX_API_KEY"] }
+  ];
+  const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const BY_ENV = {}, BY_NAME = {};
+  PROVIDERS.forEach(pr => { pr.envs.forEach(e => BY_ENV[e] = pr); BY_NAME[norm(pr.name)] = pr; });
+  BY_NAME.gemini = BY_NAME.googlegemini; BY_NAME.wandb = BY_NAME.weightsbiases; BY_NAME.nvidia = BY_NAME.nvidianim;
+  // acha o provedor pela variável do .env (mais confiável) ou pelo nome
+  function providerOf(api){
+    if (BY_ENV[api.env]) return BY_ENV[api.env];
+    const stem = String(api.env || '').replace(/_(API_?KEY|KEY|TOKEN|ACCOUNT_ID|PROJECT_ID)$/, '');
+    return BY_NAME[norm(api.name)] || BY_NAME[norm(stem)] || null;
+  }
 
-  const LINKS = {
-    "Agnes AI": "https://agnes-ai.com/", "AI Gateway": "https://dash.cloudflare.com/",
-    "Anthropic": "https://console.anthropic.com/", "AtlasCloud": "https://www.atlascloud.ai/",
-    "Chutes": "https://chutes.ai/", "Cloudflare": "https://dash.cloudflare.com/",
-    "Cohere": "https://dashboard.cohere.com/", "DeepSeek": "https://platform.deepseek.com/",
-    "Google Gemini": "https://aistudio.google.com/", "MiniMax": "https://www.minimax.io/",
-    "Novita": "https://novita.ai/", "NVIDIA NIM": "https://build.nvidia.com/",
-    "Ollama": "https://ollama.com/", "OpenAI": "https://platform.openai.com/",
-    "OpenRouter": "https://openrouter.ai/", "Opper": "https://opper.ai/",
-    "SiliconFlow": "https://cloud.siliconflow.com/", "TokenRouter": "https://www.tokenrouter.com/",
-    "Vertex AI": "https://console.cloud.google.com/", "Wafer": "https://www.wafer.ai/",
-    "Weights & Biases": "https://wandb.ai/", "XKiro": "https://xkiro.com/",
-    "ZAI": "https://z.ai/", "ZenMux": "https://zenmux.ai/"
-  };
-
-  const FALLBACK_LOGOS = {
-    "Agnes AI": "https://cdn.simpleicons.org/openai/white",
-    "Chutes": "https://cdn.simpleicons.org/lightning/white",
-    "Opper": "https://cdn.simpleicons.org/openai/white",
-    "SiliconFlow": "https://cdn.simpleicons.org/siliconcloud/white",
-    "TokenRouter": "https://cdn.simpleicons.org/openai/white",
-    "Vertex AI": "https://cdn.simpleicons.org/googlecloud/white",
-    "Wafer": "https://cdn.simpleicons.org/openai/white",
-    "Weights & Biases": "https://cdn.simpleicons.org/weightsandbiases/white",
-    "XKiro": "https://cdn.simpleicons.org/openai/white",
-    "ZAI": "https://cdn.simpleicons.org/zai/white",
-    "ZenMux": "https://cdn.simpleicons.org/openai/white"
-  };
-
-  const ICONS = {
-    "Agnes AI": "https://www.google.com/s2/favicons?domain=agnes-ai.com&sz=64",
-    "AI Gateway": "https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
-    "Anthropic": "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
-    "AtlasCloud": "https://www.google.com/s2/favicons?domain=atlascloud.ai&sz=64",
-    "Chutes": "https://www.google.com/s2/favicons?domain=chutes.ai&sz=64",
-    "Cloudflare": "https://www.google.com/s2/favicons?domain=cloudflare.com&sz=64",
-    "Cohere": "https://www.google.com/s2/favicons?domain=cohere.com&sz=64",
-    "DeepSeek": "https://www.google.com/s2/favicons?domain=deepseek.com&sz=64",
-    "Google Gemini": "https://www.google.com/s2/favicons?domain=ai.google.dev&sz=64",
-    "MiniMax": "https://www.google.com/s2/favicons?domain=minimax.io&sz=64",
-    "Novita": "https://www.google.com/s2/favicons?domain=novita.ai&sz=64",
-    "NVIDIA NIM": "https://www.google.com/s2/favicons?domain=nvidia.com&sz=64",
-    "Ollama": "https://www.google.com/s2/favicons?domain=ollama.com&sz=64",
-    "OpenAI": "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
-    "OpenRouter": "https://www.google.com/s2/favicons?domain=openrouter.ai&sz=64",
-    "Opper": "https://www.google.com/s2/favicons?domain=opper.ai&sz=64",
-    "SiliconFlow": "https://www.google.com/s2/favicons?domain=siliconflow.com&sz=64",
-    "TokenRouter": "https://www.google.com/s2/favicons?domain=tokenrouter.com&sz=64",
-    "Vertex AI": "https://www.google.com/s2/favicons?domain=cloud.google.com&sz=64",
-    "Wafer": "https://www.google.com/s2/favicons?domain=wafer.ai&sz=64",
-    "Weights & Biases": "https://www.google.com/s2/favicons?domain=wandb.ai&sz=64",
-    "XKiro": "https://www.google.com/s2/favicons?domain=xkiro.com&sz=64",
-    "ZAI": "https://www.google.com/s2/favicons?domain=z.ai&sz=64",
-    "ZenMux": "https://www.google.com/s2/favicons?domain=zenmux.ai&sz=64"
-  };
-
+  const STORAGE_KEY = 'codajas_vault_v1';
   let apis = [];
   let revealed = new Set();
   let filter = '';
-  let chartInstance = null;
+
+  const EYE = '<svg class="key-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const EYE_OFF = '<svg class="key-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
   function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function initials(name){ return name.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase(); }
-  
-  function iconFor(name, env) {
-    let iconUrl = ICONS[name];
-    if (!iconUrl) {
-      if (FALLBACK_LOGOS[name]) {
-        iconUrl = FALLBACK_LOGOS[name];
-      } else {
-        const init = initials(name || env.replace(/_API_KEY$/,''));
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#1c1c1f" rx="8"/><text x="50%" y="54%" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ededed" text-anchor="middle" dominant-baseline="middle">${init}</text></svg>`;
-        return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-      }
-    }
-    return iconUrl;
-  }
-
-  function linkFor(name){ return LINKS[name] || `https://www.google.com/search?q=${encodeURIComponent(name + " API")}`; }
+  function initials(name){ return (name||'?').split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase(); }
   function uid(){ return 'k' + Math.random().toString(36).slice(2,9); }
+  function linkFor(api){ const pr = providerOf(api); return pr ? pr.url : ''; }
+
+  // Favicon oficial: tenta Google, depois DuckDuckGo, depois o /favicon.ico do próprio site; por fim as iniciais.
+  const FAV = [
+    d => `https://www.google.com/s2/favicons?domain=${d}&sz=64`,
+    d => `https://icons.duckduckgo.com/ip3/${d}.ico`,
+    d => `https://${d}/favicon.ico`
+  ];
+  function iconHTML(api){
+    const pr = providerOf(api);
+    if (pr) return `<img src="${FAV[0](pr.domain)}" alt="" referrerpolicy="no-referrer" data-step="0" data-domain="${pr.domain}" data-init="${escapeHtml(initials(pr.name))}">`;
+    return `<span class="fallback">${escapeHtml(initials(api.name))}</span>`;
+  }
 
   const grid = document.getElementById('grid');
   const countNum = document.getElementById('countNum');
   const navCount = document.getElementById('navCount');
-  const dashboardPanel = document.getElementById('dashboardPanel');
-  let chartCanvas = document.getElementById('usageChart');
 
-  // Descobrir o nome de usuário do Windows de forma dinâmica para mostrar o caminho
-  let winUser = "SeuUsuario";
-  const ua = navigator.userAgent;
-  if (ua.includes("Windows")) {
-    const match = ua.match(/Windows NT [\d.]+; (?:Win64; x64|WOW64|Win64|x64)\)/);
-  }
-  document.getElementById('fccPathDisplay').textContent = `C:\\Users\\${winUser}\\.fcc\\.env`;
-
-  // Lógica de Alternância de Tema
-  const themeToggle = document.getElementById('themeToggle');
+  // ---------- Tema ----------
   const iconMoon = document.getElementById('icon-moon');
   const iconSun = document.getElementById('icon-sun');
-  
-  let currentTheme = localStorage.getItem('theme') || 'dark';
-  if (currentTheme === 'light') {
+  if ((localStorage.getItem('theme') || 'dark') === 'light') {
     document.body.setAttribute('data-theme', 'light');
-    iconMoon.style.display = 'none';
-    iconSun.style.display = 'block';
+    iconMoon.style.display = 'none'; iconSun.style.display = 'block';
   }
-
-  themeToggle.addEventListener('click', () => {
-    if (document.body.getAttribute('data-theme') === 'light') {
-      document.body.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'dark');
-      iconMoon.style.display = 'block';
-      iconSun.style.display = 'none';
-    } else {
-      document.body.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
-      iconMoon.style.display = 'none';
-      iconSun.style.display = 'block';
-    }
-    if(chartInstance) renderChart();
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const light = document.body.getAttribute('data-theme') === 'light';
+    if (light) { document.body.removeAttribute('data-theme'); localStorage.setItem('theme','dark'); }
+    else { document.body.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); }
+    iconMoon.style.display = light ? 'block' : 'none';
+    iconSun.style.display = light ? 'none' : 'block';
   });
 
-  // Navegação de Abas
+  // ---------- Navegação ----------
   document.getElementById('nav').addEventListener('click', (e) => {
     const item = e.target.closest('.nav-item');
     if (!item || !item.dataset.panel) return;
-    
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     item.classList.add('active');
-    
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + item.dataset.panel).classList.add('active');
-    
     const info = {
       keys: { title: 'API Keys', sub: 'Clique no card para revelar a chave' },
-      settings: { title: 'Configurações', sub: 'Integração e preferências' }
+      settings: { title: 'Configurações', sub: 'Exportação .env e instalação no Windows' }
     };
-    
     document.getElementById('pageTitle').textContent = info[item.dataset.panel].title;
     document.getElementById('pageSub').textContent = info[item.dataset.panel].sub;
   });
 
+  // ---------- Render ----------
   function render(){
     const q = filter.trim().toLowerCase();
     const list = apis.filter(a => !q || a.name.toLowerCase().includes(q) || a.env.toLowerCase().includes(q));
-
     countNum.textContent = apis.length;
     navCount.textContent = apis.length;
-    grid.innerHTML = '';
 
     if (!list.length){
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:40px 0">Nenhuma chave encontrada. Importe um arquivo .env ou adicione uma nova.</div>`;
-      dashboardPanel.style.display = 'none';
+      grid.innerHTML = apis.length
+        ? `<div class="empty"><b>Nada encontrado</b>Tente outro termo de busca.</div>`
+        : `<div class="empty"><b>Nenhuma chave ainda</b>Importe um .env ou clique em Adicionar.</div>`;
       return;
     }
 
-    list.forEach(api => {
-      const isRevealed = revealed.has(api.id);
-      const card = document.createElement('div');
-      card.className = `card ${isRevealed ? 'revealed' : ''}`;
-      card.dataset.id = api.id;
-      
-      card.innerHTML = `
+    grid.innerHTML = list.map(api => {
+      const isRev = revealed.has(api.id);
+      const shown = api.key.replace(/\s+/g, ' ');
+      return `
+      <div class="card ${isRev ? 'revealed' : ''}" data-id="${api.id}">
         <div class="card-head">
-          <div class="icon">
-            <img src="${iconFor(api.name, api.env)}" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=&quot;fallback&quot;>${initials(api.name)}</span>'">
-          </div>
+          <div class="icon">${iconHTML(api)}</div>
           <div class="meta">
-            <div class="name">
-              <a href="${linkFor(api.name)}" target="_blank" rel="noopener noreferrer" title="Acessar dashboard / API" onclick="event.stopPropagation()">
-                ${escapeHtml(api.name)}
-              </a>
-            </div>
-            <div class="env">${escapeHtml(api.env)}</div>
+            <div class="name">${linkFor(api) ? `<a href="${escapeHtml(linkFor(api))}" target="_blank" rel="noopener noreferrer" title="Abrir ${escapeHtml(linkFor(api))}">${escapeHtml(api.name)}</a>` : escapeHtml(api.name)}</div>
+            <div class="env" title="${escapeHtml(api.env)}">${escapeHtml(api.env)}</div>
           </div>
-          <button class="del" data-id="${api.id}" title="Remover" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          </button>
+          <div class="card-actions">
+            <button class="icon-btn copy" title="Copiar chave">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button class="icon-btn del" title="Remover">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
         </div>
         <div class="key-row">
-          <div class="key-text" data-id="${api.id}">${escapeHtml(api.key)}</div>
+          <div class="key-text ${isRev ? '' : 'mask'}">${isRev ? escapeHtml(shown) : '••••••••••••••••••••'}</div>
+          ${isRev ? EYE_OFF : EYE}
         </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    renderChart();
+      </div>`;
+    }).join('');
   }
 
-  function renderChart() {
-    if (apis.length === 0) return;
-    dashboardPanel.style.display = 'block';
-
-    const labels = [];
-    const dataUso = [];
-    const dataRestante = [];
-    const sampleApis = apis.slice(0, 8);
-    
-    sampleApis.forEach(a => {
-      labels.push(a.name);
-      const uso = Math.floor(Math.random() * 80) + 10;
-      dataUso.push(uso);
-      dataRestante.push(100 - uso);
-    });
-
-    if (chartInstance) {
-      chartInstance.destroy();
+  // fallback de ícone quebrado (error não propaga, então usa captura)
+  grid.addEventListener('load', e => {
+    const img = e.target;
+    if (img && img.tagName === 'IMG' && img.dataset.step === '0' && img.naturalWidth && img.naturalWidth <= 16) {
+      img.dataset.step = 1; img.src = FAV[1](img.dataset.domain);   // ícone genérico do Google: tenta a próxima fonte
     }
+  }, true);
+  grid.addEventListener('error', e => {
+    const img = e.target;
+    if (img && img.tagName === 'IMG') {
+      const step = +img.dataset.step + 1;
+      if (FAV[step] && img.dataset.domain) { img.dataset.step = step; img.src = FAV[step](img.dataset.domain); }
+      else img.parentElement.innerHTML = `<span class="fallback">${img.dataset.init || '?'}</span>`;
+    }
+  }, true);
 
-    const isLight = document.body.getAttribute('data-theme') === 'light';
-    const gridColor = isLight ? '#e9ecef' : '#222225';
-    const textColor = isLight ? '#71717a' : '#7a7a85';
-    const bgUsed = isLight ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 92, 122, 0.1)';
-    const bgRem = isLight ? 'rgba(16, 185, 129, 0.1)' : 'rgba(61, 220, 151, 0.1)';
-    const colUsed = isLight ? '#ef4444' : '#ff5c7a';
-    const colRem = isLight ? '#10b981' : '#3ddc97';
-
-    const ctx = chartCanvas.getContext('2d');
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Usado (%)',
-            data: dataUso,
-            borderColor: colUsed,
-            backgroundColor: bgUsed,
-            borderWidth: 1.5,
-            pointRadius: 3,
-            pointBackgroundColor: colUsed,
-            tension: 0.3,
-            fill: true,
-            yAxisID: 'y',
-          },
-          {
-            label: 'Restante (%)',
-            data: dataRestante,
-            borderColor: colRem,
-            backgroundColor: bgRem,
-            borderWidth: 1.5,
-            pointRadius: 3,
-            pointBackgroundColor: colRem,
-            tension: 0.3,
-            fill: true,
-            yAxisID: 'y'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          y: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-          }
-        },
-        plugins: {
-          legend: {
-            labels: { color: textColor, font: { size: 10, family: 'sans-serif' } }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            grid: { color: gridColor },
-            ticks: { color: textColor, font: { size: 10 }, callback: function(value) { return value + '%'; } }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { color: textColor, font: { size: 10 } }
-          }
+  function saveLocal(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(apis)); } catch(e) {} }
+  function loadLocal(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          apis = parsed.filter(a => a.env !== 'FCC_CONFIG_SCHEMA')
+            .map(a => { const pr = BY_ENV[a.env]; return { ...a, name: pr ? pr.name : a.name, arr: a.arr ?? /_KEY$/.test(a.env) }; });
+          saveLocal();
         }
       }
-    });
+    } catch(e) {}
+    render();
   }
 
-  async function syncToFirebase() {
-    if (!db) return;
-    try {
-      await set(ref(db, 'codajas/vault'), { apis });
-    } catch (e) {
-      console.error("Erro ao salvar:", e);
-      toast('Erro ao salvar no Firebase', 'err');
-    }
+  function copyText(text, msg){
+    const done = () => toast(msg || 'Copiado', 'ok');
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    } else fallbackCopy(text, done);
   }
-
-  async function loadFromFirebase() {
-    if (!db) return;
-    try {
-      const snapshot = await get(ref(db, 'codajas/vault'));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data && data.apis && data.apis.length > 0) {
-          apis = data.apis;
-        }
-      }
-      render();
-    } catch (e) {
-      console.error("Erro ao carregar:", e);
-      toast('Erro ao carregar do Firebase', 'err');
-      render();
-    }
+  function fallbackCopy(text, done){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) { toast('Não foi possível copiar', 'err'); }
+    document.body.removeChild(ta);
   }
 
   grid.addEventListener('click', e => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const id = card.dataset.id;
+    const api = apis.find(a => a.id === id);
+    if (!api) return;
+
+    if (e.target.closest('a')) return;
+    if (e.target.closest('.copy')) { copyText(api.key.split('\n')[0] === api.key ? api.key : api.key, 'Chave copiada'); return; }
     if (e.target.closest('.del')) {
-      const del = e.target.closest('.del');
-      const id = del.dataset.id;
-      const api = apis.find(a => a.id === id);
-      if (api && confirm(`Remover "${api.name}"?`)){
+      if (confirm(`Remover "${api.name}"?`)) {
         apis = apis.filter(a => a.id !== id);
-        revealed.delete(id);
-        render();
-        syncToFirebase();
-        toast('Removido','ok');
+        revealed.delete(id); render(); saveLocal(); toast('Removido', 'ok');
       }
       return;
     }
-
-    if (e.target.closest('a')) return;
-
-    const card = e.target.closest('.card');
-    if (card) {
-      const id = card.dataset.id;
-      if (revealed.has(id)) {
-        revealed.delete(id);
-        card.classList.remove('revealed');
-      } else {
-        revealed.add(id);
-        card.classList.add('revealed');
-      }
-    }
+    if (revealed.has(id)) revealed.delete(id); else revealed.add(id);
+    render();
   });
 
   let toastTimer;
   const toastEl = document.getElementById('toast');
   function toast(msg, type){
     toastEl.textContent = msg;
-    toastEl.className = 'toast show ' + (type||'');
+    toastEl.className = 'toast show ' + (type || '');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toastEl.className = 'toast ' + (type||''); }, 2000);
+    toastTimer = setTimeout(() => { toastEl.className = 'toast ' + (type || ''); }, 2500);
   }
 
-  document.getElementById('searchInput').addEventListener('input', e => {
-    filter = e.target.value; render();
-  });
+  document.getElementById('searchInput').addEventListener('input', e => { filter = e.target.value; render(); });
 
-  // Modal Add
+  // ---------- Modal Add ----------
   const addModal = document.getElementById('addModal');
   const newName = document.getElementById('newName');
   const newEnv = document.getElementById('newEnv');
@@ -967,216 +757,198 @@
     addModal.classList.add('open');
     setTimeout(() => newName.focus(), 50);
   });
-
-  document.getElementById('cancelAddBtn').addEventListener('click', () => {
-    addModal.classList.remove('open');
-  });
-
+  document.getElementById('cancelAddBtn').addEventListener('click', () => addModal.classList.remove('open'));
   document.getElementById('saveAddBtn').addEventListener('click', () => {
-    const name = newName.value.trim();
-    const env = newEnv.value.trim();
-    const key = newKey.value.trim();
-    if (!name || !env || !key) {
-      toast('Preencha todos os campos', 'err');
-      return;
-    }
-    apis.unshift({ id: uid(), name, env, key });
-    render();
-    syncToFirebase();
+    const name = newName.value.trim(), env = newEnv.value.trim(), key = newKey.value.trim();
+    if (!name || !env || !key) { toast('Preencha todos os campos', 'err'); return; }
+    const pr = BY_ENV[env] || BY_NAME[norm(name)];
+    apis.unshift({ id: uid(), name: pr ? pr.name : name, env, key, arr: /_KEY$/.test(env) });
+    render(); saveLocal();
     addModal.classList.remove('open');
     toast('API adicionada', 'ok');
   });
+  addModal.addEventListener('click', e => { if (e.target === addModal) addModal.classList.remove('open'); });
 
-  addModal.addEventListener('click', (e) => {
-    if (e.target === addModal) addModal.classList.remove('open');
-  });
-
-  function generateEnvContent() {
-    return apis.map(a => {
-      const needsQuote = /[\n\r"]/.test(a.key) || a.key.startsWith(' ') || a.key.endsWith(' ');
-      const val = needsQuote ? '"' + a.key.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n') + '"' : a.key;
-      return `${a.env}=${val}`;
-    }).join('\n') + '\n';
+  // ---------- .env: gerar / baixar ----------
+  function generateEnvContent(){
+    const lines = [
+      '# Managed by Free Claude Code.',
+      '# Edit settings in /admin when possible.',
+      'FCC_CONFIG_SCHEMA=2',
+      '',
+      '# Configured settings'
+    ];
+    apis.slice().sort((a, b) => a.env.localeCompare(b.env)).forEach(a => {
+      if (a.arr) {
+        const json = JSON.stringify(a.key.split('\n').map(s => s.trim()).filter(Boolean));
+        lines.push(`${a.env}="${json.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`);
+      } else {
+        lines.push(`${a.env}=${a.key.replace(/\r?\n/g, ' ')}`);
+      }
+    });
+    return lines.join('\r\n') + '\r\n';
   }
 
-  // Import / Export
-  document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
-  document.getElementById('exportQuickBtn').addEventListener('click', () => {
-    const content = generateEnvContent();
-    const blob = new Blob([content], {type: 'text/plain'});
+  function downloadBlob(content, filename, type){
+    const blob = new Blob([content], { type: type || 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `.env`;
+    a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function downloadEnv(){
+    if (!apis.length) { toast('Nenhuma chave para exportar', 'err'); return; }
+    downloadBlob(generateEnvContent(), '.env');
     toast('Arquivo .env baixado', 'ok');
+  }
+  document.getElementById('exportQuickBtn').addEventListener('click', downloadEnv);
+  document.getElementById('downloadEnvBtn').addEventListener('click', downloadEnv);
+  document.getElementById('stepEnvBtn').addEventListener('click', downloadEnv);
+
+  // ---------- .env: importar ----------
+  const fileInput = document.getElementById('fileInput');
+  document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) handleFile(f);
+    fileInput.value = '';
   });
 
-  const fileInput = document.getElementById('fileInput');
-  fileInput.addEventListener('change', e => { 
-    const f = e.target.files[0]; 
-    if (f) handleFile(f); 
-    fileInput.value = ''; 
-  });
+  function prettyName(env){
+    if (BY_ENV[env]) return BY_ENV[env].name;
+    return env.replace(/_API_KEY$/, '').replace(/_/g, ' ').toLowerCase()
+      .split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  }
 
   function parseEnv(text){
-    return text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#') && l.includes('='))
-      .map(l => {
-        const eq = l.indexOf('=');
-        const env = l.slice(0, eq).trim();
-        let key = l.slice(eq + 1).trim();
-        if (key.startsWith('"') && key.endsWith('"')) key = key.slice(1,-1).replace(/\\n/g,'\n').replace(/\\"/g,'"');
-        else if (key.startsWith("'") && key.endsWith("'")) key = key.slice(1,-1);
-        if (key.startsWith('[') && key.endsWith(']')) key = key.slice(1,-1).trim();
-        if (key.startsWith('"') && key.endsWith('"')) key = key.slice(1,-1);
-        
-        let displayName = env.replace(/_API_KEY$/,'').replace(/_/g,' ');
-        displayName = displayName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        if (displayName === 'Openai') displayName = 'OpenAI';
-        if (displayName === 'Zai') displayName = 'ZAI';
-        if (displayName === 'Xkiro') displayName = 'XKiro';
-        if (displayName === 'Deepseek') displayName = 'DeepSeek';
+    const out = [];
+    text.split(/\r?\n/).forEach(raw => {
+      let l = raw.trim();
+      if (!l || l.startsWith('#') || !l.includes('=')) return;
+      if (l.startsWith('export ')) l = l.slice(7).trim();
+      const eq = l.indexOf('=');
+      const env = l.slice(0, eq).trim();
+      let val = l.slice(eq + 1).trim();
+      if (!env || env === 'FCC_CONFIG_SCHEMA') return;
 
-        return { id:uid(), name: displayName, env, key };
-      });
+      let arr = false;
+      if (val.length >= 2 && val.startsWith('"') && val.endsWith('"')) {
+        val = val.slice(1, -1).replace(/\\(["\\])/g, '$1');
+      } else if (val.length >= 2 && val.startsWith("'") && val.endsWith("'")) {
+        val = val.slice(1, -1);
+      }
+      if (val.startsWith('[') && val.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(val);
+          if (Array.isArray(parsed) && parsed.every(x => typeof x === 'string')) { val = parsed.join('\n'); arr = true; }
+        } catch(e) {}
+      }
+      if (!val) return;
+      out.push({ id: uid(), name: prettyName(env), env, key: val, arr });
+    });
+    return out;
   }
-  
+
   function handleFile(file){
     const reader = new FileReader();
     reader.onload = () => {
-      const text = String(reader.result);
-      let imported = parseEnv(text);
-      
-      if (!imported.length){ 
-        toast('Nenhuma chave válida encontrada', 'err');
-        return; 
-      }
-      
-      const newApis = imported.filter(newApi => !apis.some(a => a.env === newApi.env));
-      apis = [...apis, ...newApis];
-      
-      render();
-      syncToFirebase();
-      
-      toast(`${newApis.length} importada(s)`,'ok');
+      const imported = parseEnv(String(reader.result));
+      if (!imported.length){ toast('Nenhuma chave válida encontrada', 'err'); return; }
+      const fresh = imported.filter(n => !apis.some(a => a.env === n.env));
+      apis = [...apis, ...fresh];
+      render(); saveLocal();
+      toast(`${fresh.length} importada(s)`, 'ok');
     };
     reader.readAsText(file);
   }
 
-  // --- Novas Funções de Exportação para o Windows ---
+  // ---------- Instalador .bat ----------
+  const winUser = document.getElementById('winUser');
+  const userInput = document.getElementById('userInput');
+  const pathPreview = document.getElementById('pathPreview');
+  const pathHint = document.getElementById('pathHint');
+  const cmdText = document.getElementById('cmdText');
+  let userMode = localStorage.getItem('codajas_user_mode') || 'auto';
+  winUser.value = localStorage.getItem('codajas_win_user') || 'rerison.silva';
 
-  // 1. Baixar o arquivo .env
-  document.getElementById('downloadEnvBtn').addEventListener('click', () => {
-    const content = generateEnvContent();
-    const blob = new Blob([content], {type: 'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `.env`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast('.env baixado. Agora baixe o Instalador.', 'ok');
+  function cleanUser(u){ return (u || '').replace(/[\\\/:*?"<>|%^&!\r\n]/g, '').trim() || 'rerison.silva'; }
+  function targetDir(){ return userMode === 'auto' ? '%USERPROFILE%\\.fcc' : `C:\\Users\\${cleanUser(winUser.value)}\\.fcc`; }
+
+  function refreshInstall(){
+    document.querySelectorAll('#userSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === userMode));
+    userInput.classList.toggle('show', userMode === 'custom');
+    pathPreview.textContent = targetDir();
+    pathHint.textContent = userMode === 'auto'
+      ? 'Funciona para qualquer usuário. Exemplo: C:\\Users\\rerison.silva\\.fcc'
+      : 'Caminho fixo para o usuário informado.';
+    const d = targetDir();
+    cmdText.textContent = `mkdir "${d}" 2>nul & copy /y ".env" "${d}\\.env"`;
+  }
+
+  document.getElementById('userSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    userMode = b.dataset.mode; localStorage.setItem('codajas_user_mode', userMode); refreshInstall();
   });
+  winUser.addEventListener('input', () => { localStorage.setItem('codajas_win_user', winUser.value); refreshInstall(); });
+  document.getElementById('copyCmdBtn').addEventListener('click', () => copyText(cmdText.textContent, 'Comando copiado'));
 
-  // 2. Baixar o script .bat que move o arquivo
+  function generateBat(){
+    const L = [
+      '@echo off',
+      'setlocal',
+      'title Codajas - Instalador do .env',
+      'echo ============================================',
+      'echo   Codajas - Instalador do .env (Free Claude Code)',
+      'echo ============================================',
+      'echo.',
+      `set "FCC_DIR=${targetDir()}"`,
+      'set "SRC=%~dp0.env"',
+      'if not exist "%SRC%" set "SRC=%~dp0env"',
+      'if not exist "%SRC%" goto :nosrc',
+      'echo Destino: %FCC_DIR%',
+      'echo.',
+      'if exist "%FCC_DIR%\\" goto :hasdir',
+      'mkdir "%FCC_DIR%"',
+      'if errorlevel 1 goto :mkfail',
+      'echo [OK] Pasta .fcc criada.',
+      ':hasdir',
+      'if not exist "%FCC_DIR%\\.env" goto :docopy',
+      'copy /y "%FCC_DIR%\\.env" "%FCC_DIR%\\.env.bak" >nul',
+      'echo [OK] Backup do .env anterior salvo em .env.bak',
+      ':docopy',
+      'copy /y "%SRC%" "%FCC_DIR%\\.env" >nul',
+      'if errorlevel 1 goto :copyfail',
+      'echo [OK] .env instalado com sucesso em:',
+      'echo      %FCC_DIR%\\.env',
+      'echo.',
+      'echo Reinicie o Free Claude Code para aplicar as chaves.',
+      'goto :end',
+      ':nosrc',
+      'echo [ERRO] Arquivo .env nao encontrado ao lado deste instalador.',
+      'echo        Salve o .env e o instalar-fcc.bat na MESMA pasta.',
+      'goto :end',
+      ':mkfail',
+      'echo [ERRO] Nao foi possivel criar a pasta %FCC_DIR%',
+      'goto :end',
+      ':copyfail',
+      'echo [ERRO] Falha ao copiar o .env para %FCC_DIR%',
+      ':end',
+      'echo.',
+      'pause',
+      'endlocal'
+    ];
+    return L.join('\r\n') + '\r\n';
+  }
+
   document.getElementById('downloadBatBtn').addEventListener('click', () => {
-    const batContent = `@echo off
-title Instalador Free Claude Code - Codajas
-echo =======================================================
-echo  Instalador de Chaves - Codajas para Free Claude Code
-echo =======================================================
-echo.
-
-set "TARGET_DIR=%USERPROFILE%\\.fcc"
-set "TARGET_FILE=%TARGET_DIR%\\.env"
-set "SOURCE_FILE=%~dp0.env"
-
-if not exist "%SOURCE_FILE%" (
-    echo [ERRO] O arquivo .env nao foi encontrado nesta pasta.
-    echo Certifique-se de que o .env baixado esta na mesma pasta deste script.
-    pause
-    exit /b
-)
-
-if not exist "%TARGET_DIR%" (
-    echo Criando a pasta .fcc no seu perfil...
-    mkdir "%TARGET_DIR%"
-)
-
-echo Copiando as chaves para: %TARGET_FILE%
-copy /Y "%SOURCE_FILE%" "%TARGET_FILE%" >nul
-
-if %ERRORLEVEL% equ 0 (
-    echo.
-    echo [SUCESSO] As chaves foram instaladas com sucesso!
-    echo Voce ja pode fechar esta janela e rodar o fcc-server.
-) else (
-    echo.
-    echo [ERRO] Nao foi possivel copiar o arquivo. Verifique as permissoes.
-)
-
-echo.
-pause
-`;
-    const blob = new Blob([batContent], {type: 'application/bat'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `instalar_codajas.bat`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast('Instalador baixado. Execute-o na pasta do .env.', 'ok');
+    downloadBlob(generateBat(), 'instalar-fcc.bat', 'application/octet-stream');
+    toast('instalar-fcc.bat baixado', 'ok');
   });
 
-  // Integração Admin
-  document.getElementById('previewEnvBtn').addEventListener('click', () => {
-    const ta = document.getElementById('envPreview');
-    if (ta.style.display === 'none' || !ta.style.display) {
-      ta.value = generateEnvContent();
-      ta.style.display = 'block';
-    } else {
-      ta.style.display = 'none';
-    }
-  });
-
-  document.getElementById('sendAdminBtn').addEventListener('click', async () => {
-    const base = document.getElementById('adminUrl').value.trim();
-    const endpoint = document.getElementById('adminEndpoint').value.trim();
-    const url = endpoint ? new URL(endpoint, base).href : base;
-    const envContent = generateEnvContent();
-    const result = document.getElementById('adminResult');
-    
-    result.style.display = 'block';
-    result.style.color = 'var(--muted)';
-    result.textContent = `Enviando...`;
-    
-    try{
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: JSON.stringify({ format:'env', content: envContent, entries: apis.map(a => ({ env: a.env, key: a.key, name: a.name })) }),
-        mode: 'cors'
-      });
-      const text = await resp.text().catch(() => '');
-      if (resp.ok){
-        result.style.color = 'var(--accent)';
-        result.textContent = `Sucesso (HTTP ${resp.status}).`;
-        toast('Enviado','ok');
-      } else {
-        result.style.color = 'var(--danger)';
-        result.textContent = `Falhou HTTP ${resp.status}. Copiando conteúdo...`;
-        await navigator.clipboard.writeText(envContent).catch(()=>{});
-        toast('Falhou, copiado','err');
-      }
-    }catch(err){
-      result.style.color = 'var(--danger)';
-      result.textContent = `Erro CORS. Conteúdo copiado. Cole manualmente no Admin.`;
-      await navigator.clipboard.writeText(envContent).catch(()=>{});
-      toast('Copiado','err');
-    }
-  });
-
-  window.addEventListener('load', () => {
-    loadFromFirebase();
-  });
+  refreshInstall();
+  window.addEventListener('load', loadLocal);
 </script>
 
 </body>
