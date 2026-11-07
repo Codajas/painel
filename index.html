@@ -395,6 +395,13 @@
     background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px;
   }
   .md-tools button:hover { color: var(--text); background: var(--surface-hover); border-color: var(--border-hover); }
+  .prose img { display: block; max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); cursor: zoom-in; margin: 4px 0; background: var(--surface); }
+  .img-missing { display: inline-block; font-size: .72rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; padding: 8px 12px; }
+  .img-row { display: none; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .img-row.open { display: flex; }
+  .img-row input { flex: 1; min-width: 0; }
+  .img-row .btn { flex-shrink: 0; height: 36px; }
+  @media (max-width: 768px) { .img-row.open { flex-wrap: wrap; } }
   .hint { font-size: .66rem; color: var(--muted); margin-top: 6px; }
 
   @media (max-width: 768px) {
@@ -638,9 +645,15 @@
         <button type="button" data-md="block" title="Bloco de comando">Bloco</button>
         <button type="button" data-md="list" title="Lista">Lista</button>
         <button type="button" data-md="link" title="Link">Link</button>
+        <button type="button" data-md="image" title="Inserir imagem por link">Imagem</button>
+      </div>
+      <div class="img-row" id="imgRow">
+        <input type="text" id="imgUrl" placeholder="Cole o link da imagem (https://...)">
+        <input type="text" id="imgAlt" placeholder="Descrição (opcional)">
+        <button type="button" class="btn primary" id="imgInsertBtn">Inserir</button>
       </div>
       <textarea id="postBody" class="post-body" placeholder="Escreva o conteúdo da publicação..."></textarea>
-      <div class="hint">Formatação: ## título, **negrito**, `código`, - lista, [texto](https://link) e blocos de comando com ```.</div>
+      <div class="hint">Formatação: ## título, **negrito**, `código`, - lista, [texto](https://link), imagem por link com ![descrição](https://link-da-imagem) e blocos de comando com ```. As imagens não são salvas aqui: só o link fica guardado.</div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:24px;">
       <button class="btn" id="postCancelBtn">Cancelar</button>
@@ -1191,6 +1204,7 @@
     t = escapeHtml(t);
     t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
     t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer">');
     t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
     return t;
   }
@@ -1221,7 +1235,7 @@
     }).join('');
   }
   function excerpt(body){
-    return String(body || '').replace(/```[\s\S]*?```/g, ' ').replace(/[#>*`]/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim().slice(0, 220);
+    return String(body || '').replace(/```[\s\S]*?```/g, ' ').replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').replace(/[#>*`]/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim().slice(0, 220);
   }
   function fmtDate(ts){ return new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }); }
   function catChip(cat){ const c = CATS[cat]; return '<span class="chip" style="--c:' + c.color + '"><i></i>' + c.name + '</span>'; }
@@ -1284,7 +1298,20 @@
     const c = e.target.closest('.post'); if (!c) return;
     openPostId = c.dataset.id; renderTools();
   });
+  postReader.addEventListener('error', e => {
+    if (e.target && e.target.tagName === 'IMG') {
+      const m = d_span(e.target.alt);
+      e.target.replaceWith(m);
+    }
+  }, true);
+  function d_span(alt){
+    const sp = document.createElement('span');
+    sp.className = 'img-missing';
+    sp.textContent = 'Imagem indisponível' + (alt ? ': ' + alt : '');
+    return sp;
+  }
   postReader.addEventListener('click', e => {
+    if (e.target.tagName === 'IMG') { window.open(e.target.src, '_blank', 'noopener'); return; }
     const cc = e.target.closest('.code-copy');
     if (cc) { copyText(cc.parentElement.querySelector('code').textContent, 'Código copiado'); return; }
     const b = e.target.closest('[data-act]'); if (!b) return;
@@ -1313,6 +1340,7 @@
     postTitle.value = p ? p.title : '';
     postCat.value = p ? p.cat : (CATS[postTab] ? postTab : 'windows');
     postBody.value = p ? p.body : '';
+    document.getElementById('imgRow').classList.remove('open');
     postModal.classList.add('open');
     setTimeout(() => postTitle.focus(), 50);
   }
@@ -1339,6 +1367,12 @@
   document.getElementById('mdTools').addEventListener('click', e => {
     const b = e.target.closest('[data-md]'); if (!b) return;
     const k = b.dataset.md;
+    if (k === 'image') {
+      const row = document.getElementById('imgRow');
+      row.classList.toggle('open');
+      if (row.classList.contains('open')) document.getElementById('imgUrl').focus();
+      return;
+    }
     const map = {
       h:     ['\n## ', '', 'Título da seção'],
       bold:  ['**', '**', 'negrito'],
@@ -1353,6 +1387,19 @@
     postBody.setRangeText(before + (sel || ph) + after, s0, e0, 'end');
     postBody.focus();
   });
+
+  function insertImage(){
+    const urlEl = document.getElementById('imgUrl'), altEl = document.getElementById('imgAlt');
+    const url = urlEl.value.trim(), alt = altEl.value.trim().replace(/[\[\]\n]/g, ' ');
+    if (!/^https?:\/\/\S+$/i.test(url) || /[()]/.test(url)) { toast('Use um link de imagem http(s) válido, sem parênteses', 'err'); return; }
+    const pos = postBody.selectionEnd;
+    postBody.setRangeText('\n![' + alt + '](' + url + ')\n', pos, pos, 'end');
+    urlEl.value = ''; altEl.value = '';
+    document.getElementById('imgRow').classList.remove('open');
+    postBody.focus();
+  }
+  document.getElementById('imgInsertBtn').addEventListener('click', insertImage);
+  document.getElementById('imgUrl').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); insertImage(); } });
 
   // Backup (JSON)
   document.getElementById('postExportBtn').addEventListener('click', () => {
